@@ -20,6 +20,15 @@
 #include "../GNBitmapContast.h"
 #include "../GNBitmap/GNBitmap.h"
 
+#define MAX(a, b) ((a)>(b)?(a):(b))
+#define MIN(a, b) ((a)<(b)?(a):(b))
+
+argb* hsv2argb(hsv* input, int w, int h);
+
+argb* argb2hsv(argb* input);
+
+uint8_t* rgb5652argb(uint8_t* data, int width, int height);
+
 uint8_t* argb2gray(argb* bdata, int width, int height);
 
 uint8_t* transColors(GNBitmap* bitmap);

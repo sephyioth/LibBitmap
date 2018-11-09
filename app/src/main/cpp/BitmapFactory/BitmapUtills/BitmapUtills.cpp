@@ -15,12 +15,138 @@
 */
 
 #include <cstdlib>
+#include "math.h"
 #include "BitmapUtills.h"
+#include "../GNBitmapContast.h"
+
+
+argb* hsv2argb(hsv* input, int w, int h)
+{
+    int size = w * h;
+    argb* output = (argb*) malloc(sizeof(argb) * size);
+    float    R, G, B;
+    int      k;
+    float    aa, bb, cc, f;
+    for (int i   = 0; i < size; ++i)
+    {
+
+        if (input[i].S <= 0.0)
+            R = G = B = input[i].V;
+        else
+        {
+            if (input[i].H == 1.0)
+                input[i].H = 0.0;
+            input[i].H *= 6.0;
+            k  = floor(input[i].H);
+            f  = input[i].H - k;
+            aa = input[i].V * (1.0 - input[i].S);
+            bb = input[i].V * (1.0 - input[i].S * f);
+            cc = input[i].V * (1.0 - (input[i].S * (1.0 - f)));
+            switch (k)
+            {
+                case 0:
+                    R = input[i].V;
+                    G = cc;
+                    B = aa;
+                    break;
+                case 1:
+                    R = bb;
+                    G = input[i].V;
+                    B = aa;
+                    break;
+                case 2:
+                    R = aa;
+                    G = input[i].V;
+                    B = cc;
+                    break;
+                case 3:
+                    R = aa;
+                    G = bb;
+                    B = input[i].V;
+                    break;
+                case 4:
+                    R = cc;
+                    G = aa;
+                    B = input[i].V;
+                    break;
+                case 5:
+                    R = input[i].V;
+                    G = aa;
+                    B = bb;
+                    break;
+            }
+        }
+        output[i].red   = R * 255;
+        output[i].green = G * 255;
+        output[i].blue  = B * 255;
+    }
+    return output;
+}
+
+
+hsv* argb2hsv(argb* input, int w, int h)
+{
+    if (input == NULL || w < 0 || h < 0)
+    {
+        return NULL;
+    }
+    int size = w * h;
+    hsv* output = (hsv*) malloc(sizeof(hsv) * size);
+    float r, g, b, minRGB, maxRGB, deltaRGB;
+    float temp[3];
+
+    for (int i = 0; i < size; ++i)
+    {
+
+        r = input[i].red / 255.0f;
+        g = input[i].green / 255.0f;
+        b = input[i].blue / 255.0f;
+
+        minRGB   = MIN(r, MIN(g, b));
+        maxRGB   = MAX(r, MAX(g, b));
+        deltaRGB = maxRGB - minRGB;
+
+        output[i].V     = maxRGB;
+        if (maxRGB != 0.0)
+            output[i].S = deltaRGB / maxRGB;
+        else
+            output[i].S = 0.0;
+        if (output[i].S <= 0.0)
+        {
+            output[i].H = -1.0f;
+        } else
+        {
+            if (r == maxRGB)
+            {
+                output[i].H = (g - b) / deltaRGB;
+            } else
+            {
+                if (g == maxRGB)
+                {
+                    output[i].H = 2.0 + (b - r) / deltaRGB;
+                } else
+                {
+                    if (b == maxRGB)
+                    {
+                        output[i].H = 4.0 + (r - g) / deltaRGB;
+                    }
+                }
+            }
+            output[i].H = output[i].H * 60.0;
+            if (output[i].H < 0.0)
+            {
+                output[i].H += 360;
+            }
+            output[i].H /= 360;
+        }
+    }
+    return output;
+}
 
 
 uint8_t* argb2gray(argb* bdata, int width, int height)
 {
-    if (bdata == NULL)
+    if (bdata == NULL || width < 0 || height < 0)
     {
         return NULL;
     }
@@ -43,6 +169,27 @@ uint8_t* argb2gray(argb* bdata, int width, int height)
 }
 
 
+uint8_t* rgb5652argb(uint8_t* data, int width, int height)
+{
+    if (data == NULL || width < 0 || height < 0)
+    {
+        return NULL;
+    }
+    argb* dst = (argb*) malloc(sizeof(uint8_t) * width * height);
+    int size = width * height;
+
+    for (int i = 0; i < size - 1; i += 2)
+    {
+        int value = ((int) data[i] << 8) & 0xff00 + data[i + 1] & 0xff;
+        dst[i].red   = value >> 11 & 0x1f;
+        dst[i].green = value >> 5 & 0x3F;
+        dst[i].blue  = value >> 0 & 0x1f;
+        dst[i].alpha = 0xff;
+    }
+    return reinterpret_cast<uint8_t*>(dst);
+}
+
+
 uint8_t* transColors(GNBitmap* bitmap)
 {
     if (bitmap == NULL)
@@ -50,12 +197,18 @@ uint8_t* transColors(GNBitmap* bitmap)
         return NULL;
     }
     uint8_t* data;
-    if (bitmap->chennel == ANDROID_BITMAP_FORMAT_RGBA_8888)
+    if (bitmap->type == ANDROID_BITMAP_FORMAT_RGBA_8888)
     {
         data = argb2gray((argb*) bitmap->bitmapData, bitmap->width, bitmap->height);
-    } else if (bitmap->chennel == ANDROID_BITMAP_FORMAT_A_8)
+    } else if (bitmap->type == ANDROID_BITMAP_FORMAT_A_8)
     {
         data = (uint8_t*) bitmap->bitmapData;
+    } else if (bitmap->type == ANDROID_BITMAP_FORMAT_RGB_565)
+    {
+
+    } else if (bitmap->type == ANDROID_BITMAP_FORMAT_RGBA_4444)
+    {
+
     }
     return data;
 }
@@ -67,8 +220,7 @@ int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int co
     {
         return -1;
     }
-    int      count = 0;
-    for (int i     = 0; i < h; ++i)
+    for (int i = 0; i < h; ++i)
     {
         for (int j = 0; j < w; ++j)
         {
@@ -90,11 +242,6 @@ int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int co
             if (value < 0)
                 value      = 0;
             dst[i * w + j] = value;
-            if (i > w / 2 && j > h / 2 && count < 20)
-            {
-                LOGI("value : %d", value);
-                count++;
-            }
         }
     }
     return 1;

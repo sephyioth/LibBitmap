@@ -16,7 +16,12 @@
 #ifndef LIBBITMAP_GNBITMAP_H
 #define LIBBITMAP_GNBITMAP_H
 
+#include "stdio.h"
+#include "string.h"
+#include "malloc.h"
+#include "memory.h"
 #include <stdint.h>
+
 
 class GNBitmap
 {
@@ -53,7 +58,10 @@ public:
 
     int recycle();
 
-    int copyData(uint8_t* data, int type);
+    int copyData(void* data, int type);
+
+private:
+    int getBitmapChannel();
 };
 
 

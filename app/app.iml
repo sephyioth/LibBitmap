@@ -37,6 +37,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/cpp/BitmapFactory/BitmapParse" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/cpp/BitmapFactory/BitmapUtills" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/cpp/BitmapFactory/GNBitmap" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/cpp/BitmapFactory/Blur" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/debug" isTestSource="false" generated="true" />

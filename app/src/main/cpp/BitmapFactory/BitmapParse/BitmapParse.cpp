@@ -26,19 +26,28 @@ GNBitmap* praseBitmap(JNIEnv* env, jobject jobject1)
     }
     GNBitmap* bitmap = new GNBitmap();
     AndroidBitmapInfo infoin;
-    void* pixelsin;
     int ret = 0;
     if ((ret = AndroidBitmap_getInfo(env, jobject1, &infoin)) < 0)
     {
         LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
         return NULL;
     }
-    bitmap->width   = infoin.width;
-    bitmap->height  = infoin.height;
-    bitmap->stride  = infoin.stride;
-    bitmap->flag    = infoin.flags;
-    bitmap->chennel = infoin.format;
-
+    bitmap->width  = infoin.width;
+    bitmap->height = infoin.height;
+    bitmap->stride = infoin.stride;
+    bitmap->flag   = infoin.flags;
+    bitmap->type   = infoin.format;
+    if (infoin.format == ANDROID_BITMAP_FORMAT_RGBA_8888)
+    {
+        bitmap->chennel = 4;
+    } else if (infoin.format == ANDROID_BITMAP_FORMAT_A_8)
+    {
+        bitmap->chennel = 1;
+    } else if (infoin.format == ANDROID_BITMAP_FORMAT_RGB_565 ||
+               infoin.format == ANDROID_BITMAP_FORMAT_RGBA_4444)
+    {
+        bitmap->chennel = 4;
+    }
     if ((ret = AndroidBitmap_lockPixels(env, jobject1, &bitmap->bitmapData)) < 0)
     {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);

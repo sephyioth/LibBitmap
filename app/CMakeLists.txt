@@ -10,6 +10,8 @@ file(GLOB source_files "src/main/cpp/*.cpp" "src/main/cpp/*.H"
         "src/main/cpp/BitmapFactory/BitmapUtills/*.h"
         "src/main/cpp/BitmapFactory/GNBitmap/*.cpp"
         "src/main/cpp/BitmapFactory/GNBitmap/*.h"
+        "src/main/cpp/BitmapFactory/Blur/*.cpp"
+        "src/main/cpp/BitmapFactory/Blur/*.h"
 )
 
 add_library( # Sets the name of the library.
