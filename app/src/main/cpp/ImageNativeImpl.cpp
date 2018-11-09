@@ -14,6 +14,8 @@
 *    
 */
 #include "ImageNativeImpl.h"
+#include "BitmapFactory/BitmapParse/BitmapParse.h"
+#include "BitmapFactory/GNCore.h"
 
 
 JNIEXPORT jint JNICALL
@@ -21,8 +23,22 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass typ
 {
 
     // TODO
-
-
+    GNBitmap* bitmap = praseBitmap(env, bitmapIn);
+    int ret = 0;
+    if (bitmap != NULL)
+    {
+        LOGI("parse Suc");
+    } else
+    {
+        LOGI("parse Failed");
+    }
+    if ((ret = AndroidBitmap_lockPixels(env, bitmapIn, &bitmap->bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return ret;
+    }
+    gnSobel(bitmap);
+    AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;
 
 }
@@ -129,7 +145,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, j
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, jobject bitmapIn,
-                                                       jfloat point)
+                                                      jfloat point)
 {
 
     // TODO

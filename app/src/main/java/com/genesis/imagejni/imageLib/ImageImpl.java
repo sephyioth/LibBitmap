@@ -17,14 +17,8 @@ public class ImageImpl {
 
     public static Bitmap sobelImage (Bitmap bitmapIn) {
         if (bitmapIn != null) {
-            Bitmap gary = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                    .Config.ALPHA_8);
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ALPHA_8);
-//            nRenderPlasma(bitmapIn, gary);
-//            nSobelImage(gary, bitmapOut);
-            gary.recycle();
-            return bitmapOut;
+            nSobelImage(bitmapIn);
+            return bitmapIn;
         } else {
             System.out.println("error input bitmap");
             return null;
