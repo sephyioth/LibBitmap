@@ -61,7 +61,7 @@ public:
     int copyData(void* data, int type);
 
 private:
-    int getBitmapChannel();
+    int getBitmapChannelSize();
 };
 
 

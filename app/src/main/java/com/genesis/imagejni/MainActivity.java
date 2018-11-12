@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
         bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(), true);
 
-        ImageImpl.gauss2Image(bitmap, bitmap2);
+        ImageImpl.gauss2Image(bitmap, null, 30);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         imageView.setImageBitmap(bitmap);
     }

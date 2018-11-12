@@ -33,7 +33,7 @@ GNBitmap::GNBitmap(int w, int h, int format, int flag, int stride)
     this->type       = format;
     this->flag       = flag;
     this->stride     = stride;
-    this->bitmapData = malloc(sizeof(uint8_t) * w * h * getBitmapChannel());
+    this->bitmapData = malloc(sizeof(uint8_t) * w * h * getBitmapChannelSize());
 }
 
 
@@ -56,7 +56,7 @@ int GNBitmap::copyData(void* data, int btype)
     {
         return -1;
     }
-    int size = width * height;
+    int size = width * height * getBitmapChannelSize();
     if (type == btype)
     {
         uint8_t* sdata = (uint8_t*) bitmapData;
@@ -111,7 +111,7 @@ GNBitmap* GNBitmap::createBitmap(int w, int h, int format)
 }
 
 
-int GNBitmap::getBitmapChannel()
+int GNBitmap::getBitmapChannelSize()
 {
     switch (type)
     {
@@ -122,7 +122,7 @@ int GNBitmap::getBitmapChannel()
         case ANDROID_BITMAP_FORMAT_A_8:
             return 1;
         case ANDROID_BITMAP_FORMAT_RGBA_8888:
-            return 2;
+            return 4;
         default:
             return 0;
     }
@@ -131,8 +131,8 @@ int GNBitmap::getBitmapChannel()
 
 int GNBitmap::zeroBitmap()
 {
-    int size = sizeof(uint8_t) * width * height * getBitmapChannel();
-    memset((uint8_t*)bitmapData, 0, size);
+    int size = sizeof(uint8_t) * width * height * getBitmapChannelSize();
+    memset((uint8_t*) bitmapData, 0, size);
     return 1;
 }
 
@@ -143,7 +143,7 @@ int GNBitmap::invertBitmap()
     {
         return 0;
     }
-    int size = width * height * getBitmapChannel();
+    int size = width * height * getBitmapChannelSize();
 
     uint8_t* data = (uint8_t*) bitmapData;
     for (int i = 0; i < size; ++i)

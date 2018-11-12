@@ -156,7 +156,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, 
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass type, jobject bitmap,
-                                                         jobject mask, jint radium)
+                                                         jobject mask, jint radium, jint gtype)
 {
     GNBitmap* gbitmap1 = praseBitmap(env, bitmap);
     GNBitmap* gbitmap2 = praseBitmap(env, mask);
@@ -175,8 +175,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass typ
             return ret;
         }
     }
-
-    gnGaussBlur(gbitmap1, gbitmap2, radium);
+    gnGaussBlur(gbitmap1, gbitmap2, radium ,gtype);
     AndroidBitmap_unlockPixels(env, bitmap);
     AndroidBitmap_unlockPixels(env, mask);
     return 1;

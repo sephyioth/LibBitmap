@@ -82,7 +82,7 @@ double* buildGaussKern1d(long radius)
 }
 
 
-void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask)
+void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
 {
     if (pix == NULL || w < 0 || h < 0 || radius < 0)
     {
@@ -91,6 +91,7 @@ void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask)
     double* kernel = buildGaussKern1d(radius);
     argb  * outW   = (argb*) malloc(sizeof(argb) * w * h);
     argb  * outH   = (argb*) malloc(sizeof(argb) * w * h);
+    dst = outH;
     memset(outW, 0, sizeof(argb) * w * h);
     memset(outH, 0, sizeof(argb) * w * h);
     int    kradius = radius;
@@ -140,6 +141,10 @@ void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask)
             {
                 continue;
             }
+            if (mask != NULL && mask[y * w + x] == 0x00)
+            {
+                continue;
+            }
             sumB = sumG = sumR = 0;
             for (long n = 0, i = -kradius; i <= kradius; ++i, ++n)
             {
@@ -161,29 +166,11 @@ void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask)
             outH[x + y * w] = argb1;
         }
     }
-    for (int i = 1; i < h - 1; ++i)
-    {
-        for (int j = 1; j < w - 1; ++j)
-        {
-            if (mask != NULL)
-            {
-                if (mask[i * w + j] == 0x00)
-                {
-                    pix[j + i * w].red=pix[j + i * w].red*0.8f;
-                    pix[j + i * w].green=pix[j + i * w].green*0.8f;
-                    pix[j + i * w].blue=pix[j + i * w].blue*0.8f;
-                    continue;
-                }
-            }
-            pix[j + i * w] = outH[j + i * w];
-        }
-    }
-    delete (outW);
-    delete (outH);
+    free(outW);
 }
 
 
-void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask)
+void gaussBlurSouce(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
 {
     if (pix == NULL || w < 0 || h < 0 || radius < 0)
     {
@@ -193,6 +180,7 @@ void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask)
     double* kernel = buildGaussKern2D(radius);
     double sumR = 0, sumG = 0, sumB = 0;
     argb* out = (argb*) malloc(sizeof(argb) * w * h);
+    dst = out;
     int      kradius = ksize / 2;
     for (int y       = 0; y < h; ++y)
     {
@@ -207,6 +195,10 @@ void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask)
                 sumR = sumG = sumB = 0;
             } else
             {
+                if (mask != NULL && mask[y * w + x] == 0x00)
+                {
+                    continue;
+                }
                 for (int i = -kradius; i < kradius; ++i)
                 {
                     long i_k = y + i < h ? y + i : h;
@@ -239,19 +231,16 @@ void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask)
             out[x + y * w] = argb1;
         }
     }
-    for (int i       = 0; i < h; ++i)
+}
+
+
+void gaussBlur(argb* pix, argb*&dst, int w, int h, int radium, int type, uint8_t* mask)
+{
+    if (type == GAUSS_TYPE_FAST)
     {
-        for (int j = 0; j < w; ++j)
-        {
-            if (mask != NULL)
-            {
-                if (mask[i * w + j] != 0x00)
-                {
-                    continue;
-                }
-            }
-            pix[j + i * w] = out[j + i * w];
-        }
+        gaussBlur2d(pix, dst, w, h, radium, mask);
+    } else
+    {
+        gaussBlurSouce(pix, dst, w, h, radium, mask);
     }
-    free(out);
 }

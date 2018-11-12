@@ -24,9 +24,10 @@ int* buildGaussKern2D(int winSize, int sigma);
 
 double* buildGaussKern1d(long radius);
 
-void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask);
+void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask);
 
+void gaussBlurSouce(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask);
 
-void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask);
+void gaussBlur(argb* pix, argb*&dst, int w, int h, int radium, int type, uint8_t* mask);
 
 #endif //LIBBITMAP_BLUR_H

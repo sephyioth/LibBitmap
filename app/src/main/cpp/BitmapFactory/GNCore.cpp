@@ -42,21 +42,25 @@ int gnSobel(GNBitmap* bitmap)
 }
 
 
-int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium)
+int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium, int type)
 {
     LOGI("gnGaussBlur");
-    uint8_t* data = transColorsA8(gbitmap2);
-    if (data == NULL || gbitmap1->width != gbitmap2->width || gbitmap1->height != gbitmap2->height)
+    uint8_t* mask  = NULL;
+    argb   * dst   = NULL;
+    if (gbitmap2 != NULL && (gbitmap1->width != gbitmap2->width ||
+                             gbitmap1->height != gbitmap2->height))
     {
-        return -1;
+        uint8_t* data = transColorsA8(gbitmap2);
+        if (data != NULL)
+        {
+            LOGI("gnGaussBlur data is null  (%d, %d)", gbitmap1->width, gbitmap1->height);
+            inRangeS(data, mask, gbitmap2->width, gbitmap2->height, 0xff, 0x40);
+        }
     }
-    LOGI("gnGaussBlur (%d, %d), b2(%d,%d)", gbitmap1->width, gbitmap1->height, gbitmap2->width,
-         gbitmap2->height);
-
-    uint8_t* mask = NULL;
-    inRangeS(data, mask, gbitmap2->width, gbitmap2->height, 0xff, 0x40);
-    argb* argb1 = (argb*) gbitmap1->bitmapData;
-    gaussblur2d(argb1, gbitmap1->width, gbitmap1->height, radium, mask);
+    argb   * argb1 = (argb*) gbitmap1->bitmapData;
+    gaussBlur(argb1, dst, gbitmap1->width, gbitmap1->height, radium, type, mask);
+    gbitmap1->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(dst);
     free(mask);
     return 1;
 }

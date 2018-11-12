@@ -13,9 +13,30 @@ import android.util.Log;
  * 修改备注：
  */
 public class ImageImpl {
+    public static enum GaussType {
+        GAUSSBLUR_FAST(0x00), GAUSSBLUR_SOURCE(0x01);
 
-    public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2) {
-        nGauss2Blur(bitmap1, bitmap2, 30);
+        private final int id;
+
+        GaussType (int i) {
+            id = i;
+        }
+
+        public int getId () {
+            return id;
+        }
+    }
+
+    public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2, int radium) {
+        nGauss2Blur(bitmap1, bitmap2, radium, GaussType.GAUSSBLUR_FAST.getId());
+    }
+
+
+    public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2, int radium, GaussType type) {
+        if (type == null) {
+            type = GaussType.GAUSSBLUR_FAST;
+        }
+        nGauss2Blur(bitmap1, bitmap2, radium, type.getId());
     }
 
     public static Bitmap sobelImage (Bitmap bitmapIn) {
@@ -148,7 +169,7 @@ public class ImageImpl {
 
     private static native int nMmirror (Bitmap bitmapIn, float point);
 
-    private static native int nGauss2Blur (Bitmap bitmap, Bitmap mask, int radium);
+    private static native int nGauss2Blur (Bitmap bitmap, Bitmap mask, int radium, int type);
 
     static {
         try {

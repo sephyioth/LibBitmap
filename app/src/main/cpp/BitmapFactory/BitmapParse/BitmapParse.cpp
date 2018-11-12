@@ -37,6 +37,7 @@ GNBitmap* praseBitmap(JNIEnv* env, jobject jobject1)
     bitmap->stride = infoin.stride;
     bitmap->flag   = infoin.flags;
     bitmap->type   = infoin.format;
+
     if (infoin.format == ANDROID_BITMAP_FORMAT_RGBA_8888)
     {
         bitmap->chennel = 4;

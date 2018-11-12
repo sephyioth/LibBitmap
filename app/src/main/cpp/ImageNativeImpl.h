@@ -66,7 +66,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, 
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass type, jobject bitmap,
-                                                         jobject mask, jint radium);
+                                                         jobject mask, jint radium, jint gtype);
 
 };
 

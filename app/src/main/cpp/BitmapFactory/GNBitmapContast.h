@@ -29,6 +29,9 @@
 
 #define  PI 3.141592653
 
+#define GAUSS_TYPE_FAST     0X00
+#define GAUSS_TYPE_SOURCE   0X01
+
 
 typedef struct
 {
