@@ -190,7 +190,7 @@ uint8_t* rgb5652argb(uint8_t* data, int width, int height)
 }
 
 
-uint8_t* transColors(GNBitmap* bitmap)
+uint8_t* transColorsA8(GNBitmap* bitmap)
 {
     if (bitmap == NULL)
     {
@@ -264,3 +264,19 @@ int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h)
     return 1;
 }
 
+
+int inRangeS(uint8_t* src, uint8_t* & dst, int w, int h, int upper, int lower)
+{
+    if (src == NULL  || w < 0 || h < 0)
+    {
+        return -1;
+    }
+    int size = w * h;
+    dst = (uint8_t*) malloc(sizeof(uint8_t) * size);
+    for (int i = 0; i < size; ++i)
+    {
+        uint8_t val = src[i] >= lower && src[i] <= upper ? 0xff : 0x00;
+        dst[i] = val;
+    }
+    return 1;
+}

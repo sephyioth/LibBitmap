@@ -16,11 +16,12 @@
 #include "GNCore.h"
 #include "android/bitmap.h"
 #include "BitmapUtills/BitmapUtills.h"
+#include "Blur/Blur.h"
 
 
 int gnSobel(GNBitmap* bitmap)
 {
-    uint8_t* data = transColors(bitmap);
+    uint8_t* data = transColorsA8(bitmap);
     if (data == NULL)
     {
         return -1;
@@ -37,5 +38,25 @@ int gnSobel(GNBitmap* bitmap)
     bitmap->copyData(data, ANDROID_BITMAP_FORMAT_A_8);
     free(tempX);
     free(tempY);
+    return 1;
+}
+
+
+int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium)
+{
+    LOGI("gnGaussBlur");
+    uint8_t* data = transColorsA8(gbitmap2);
+    if (data == NULL || gbitmap1->width != gbitmap2->width || gbitmap1->height != gbitmap2->height)
+    {
+        return -1;
+    }
+    LOGI("gnGaussBlur (%d, %d), b2(%d,%d)", gbitmap1->width, gbitmap1->height, gbitmap2->width,
+         gbitmap2->height);
+
+    uint8_t* mask = NULL;
+    inRangeS(data, mask, gbitmap2->width, gbitmap2->height, 0xff, 0x40);
+    argb* argb1 = (argb*) gbitmap1->bitmapData;
+    gaussblur2d(argb1, gbitmap1->width, gbitmap1->height, radium, mask);
+    free(mask);
     return 1;
 }

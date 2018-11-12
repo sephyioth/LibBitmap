@@ -21,5 +21,6 @@
 
 int gnSobel(GNBitmap* bitmap);
 
+int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium);
 
 #endif //LIBBITMAP_GNCORE_H

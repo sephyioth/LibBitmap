@@ -14,6 +14,9 @@ import android.util.Log;
  */
 public class ImageImpl {
 
+    public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2) {
+        nGauss2Blur(bitmap1, bitmap2, 30);
+    }
 
     public static Bitmap sobelImage (Bitmap bitmapIn) {
         if (bitmapIn != null) {
@@ -118,13 +121,6 @@ public class ImageImpl {
         return bitmapOut;
     }
 
-    public static Bitmap gaussBlur (Bitmap bitmap) {
-        assert bitmap == null : "error bitmap ";
-        Bitmap bitmapOut = Bitmap.createBitmap(bitmap);
-        nGaussBlur(bitmapOut);
-        return bitmapOut;
-    }
-
     public static int[] histgramImage (Bitmap bitmap) {
         return nHistgramImage(bitmap);
     }
@@ -152,7 +148,7 @@ public class ImageImpl {
 
     private static native int nMmirror (Bitmap bitmapIn, float point);
 
-    private static native int nGaussBlur (Bitmap bitmap);
+    private static native int nGauss2Blur (Bitmap bitmap, Bitmap mask, int radium);
 
     static {
         try {

@@ -19,7 +19,10 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_source);
-        ImageImpl.sobelImage(bitmap);
+        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
+        bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(), true);
+
+        ImageImpl.gauss2Image(bitmap, bitmap2);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         imageView.setImageBitmap(bitmap);
     }

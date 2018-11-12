@@ -31,10 +31,12 @@ uint8_t* rgb5652argb(uint8_t* data, int width, int height);
 
 uint8_t* argb2gray(argb* bdata, int width, int height);
 
-uint8_t* transColors(GNBitmap* bitmap);
+uint8_t* transColorsA8(GNBitmap* bitmap);
 
 int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int col, int row);
 
 int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h);
+
+int inRangeS(uint8_t* src, uint8_t* & dst, int w, int h, int upper, int lower);
 
 #endif //LIBBITMAP_BITMAPUTILLS_H

@@ -24,16 +24,19 @@ extern "C"
 {
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass type, jobject bitmapIn);
+Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass type,
+                                                         jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nSharpening(JNIEnv* env, jclass type, jobject bitmapIn);
+Java_com_genesis_imagejni_imageLib_ImageImpl_nSharpening(JNIEnv* env, jclass type,
+                                                         jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nPainting(JNIEnv* env, jclass type, jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nCannyImage(JNIEnv* env, jclass type, jobject bitmapIn);
+Java_com_genesis_imagejni_imageLib_ImageImpl_nCannyImage(JNIEnv* env, jclass type,
+                                                         jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nPrewitteImage(JNIEnv* env, jclass type,
@@ -59,10 +62,12 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, j
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, jobject bitmapIn,
-                                                       jfloat point);
+                                                      jfloat point);
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nGaussBlur(JNIEnv* env, jclass type, jobject bitmap);
+Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass type, jobject bitmap,
+                                                         jobject mask, jint radium);
+
 };
 
 #endif //IMAGEJNI_IMAGENATIVEIMPL_H

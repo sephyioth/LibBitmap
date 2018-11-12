@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstdlib>
 #include "Blur.h"
+#include "../GNBitmapContast.h"
 
 
 double* buildGaussKern2D(double sigma)
@@ -81,7 +82,7 @@ double* buildGaussKern1d(long radius)
 }
 
 
-void gaussblur2d(argb* pix, int w, int h, int radius)
+void gaussblur2d(argb* pix, int w, int h, int radius, uint8_t* mask)
 {
     if (pix == NULL || w < 0 || h < 0 || radius < 0)
     {
@@ -164,6 +165,16 @@ void gaussblur2d(argb* pix, int w, int h, int radius)
     {
         for (int j = 1; j < w - 1; ++j)
         {
+            if (mask != NULL)
+            {
+                if (mask[i * w + j] == 0x00)
+                {
+                    pix[j + i * w].red=pix[j + i * w].red*0.8f;
+                    pix[j + i * w].green=pix[j + i * w].green*0.8f;
+                    pix[j + i * w].blue=pix[j + i * w].blue*0.8f;
+                    continue;
+                }
+            }
             pix[j + i * w] = outH[j + i * w];
         }
     }
@@ -171,7 +182,8 @@ void gaussblur2d(argb* pix, int w, int h, int radius)
     delete (outH);
 }
 
-void gaussBlurSouce(argb* pix, int w, int h, int radius)
+
+void gaussBlurSouce(argb* pix, int w, int h, int radius, uint8_t* mask)
 {
     if (pix == NULL || w < 0 || h < 0 || radius < 0)
     {
@@ -231,6 +243,13 @@ void gaussBlurSouce(argb* pix, int w, int h, int radius)
     {
         for (int j = 0; j < w; ++j)
         {
+            if (mask != NULL)
+            {
+                if (mask[i * w + j] != 0x00)
+                {
+                    continue;
+                }
+            }
             pix[j + i * w] = out[j + i * w];
         }
     }
