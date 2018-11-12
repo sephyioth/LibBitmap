@@ -16,13 +16,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_source);
         Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
         bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(), true);
 
-        ImageImpl.gauss2Image(bitmap, null, 30);
+        ImageImpl.medianBlur(bitmap, bitmap2, 10, 10, ImageImpl.MedianType.BLUR_MEDIAN_TYPE_MEDIAN);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         imageView.setImageBitmap(bitmap);
     }

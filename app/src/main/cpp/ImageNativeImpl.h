@@ -68,6 +68,11 @@ JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass type, jobject bitmap,
                                                          jobject mask, jint radium, jint gtype);
 
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nMedianBlur(JNIEnv* env, jclass type, jobject bitmap,
+                                                         jobject mask, jint blurW, jint blurH,
+                                                         jint btype);
+
 };
 
 #endif //IMAGEJNI_IMAGENATIVEIMPL_H

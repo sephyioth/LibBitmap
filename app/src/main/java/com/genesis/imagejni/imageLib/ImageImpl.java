@@ -27,6 +27,25 @@ public class ImageImpl {
         }
     }
 
+    public enum MedianType {
+        BLUR_MEDIAN_TYPE_MEDIAN(0x00), BLUR_MEDIAN_TYPE_AVERAGE(0x02);
+
+        MedianType (int i) {
+            id = i;
+        }
+
+        private final int id;
+
+        public int getId () {
+            return id;
+        }
+
+    }
+
+    public static int medianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, MedianType type) {
+        return nMedianBlur(bitmap, mask, blurW, blurH, type.getId());
+    }
+
     public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2, int radium) {
         nGauss2Blur(bitmap1, bitmap2, radium, GaussType.GAUSSBLUR_FAST.getId());
     }
@@ -170,6 +189,9 @@ public class ImageImpl {
     private static native int nMmirror (Bitmap bitmapIn, float point);
 
     private static native int nGauss2Blur (Bitmap bitmap, Bitmap mask, int radium, int type);
+
+    private static native int nMedianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, int
+            type);
 
     static {
         try {

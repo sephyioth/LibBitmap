@@ -37,6 +37,10 @@ int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int co
 
 int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h);
 
-int inRangeS(uint8_t* src, uint8_t* & dst, int w, int h, int upper, int lower);
+uint8_t average(uint8_t* data, int blurw, int blurh);
+
+int inRangeS(uint8_t* src, uint8_t*&dst, int w, int h, int upper, int lower);
+
+int gnEdge(int x, int w);
 
 #endif //LIBBITMAP_BITMAPUTILLS_H

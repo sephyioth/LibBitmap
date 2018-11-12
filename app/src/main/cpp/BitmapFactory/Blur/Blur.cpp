@@ -17,6 +17,17 @@
 #include <cstdlib>
 #include "Blur.h"
 #include "../GNBitmapContast.h"
+#include "../BitmapUtills/BitmapUtills.h"
+
+
+bool isMask(uint8_t* mask, int x, int y, int w)
+{
+    if (mask != NULL && mask[y * w + x] == 0x00)
+    {
+        return true;
+    }
+    return false;
+}
 
 
 double* buildGaussKern2D(double sigma)
@@ -111,12 +122,12 @@ void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
             }
             for (long n = 0, i = -kradius; i <= kradius; ++i, ++n)
             {
-                long i_k = x + i < w ? x + i : w;
-                i_k = x + i > 0 ? x + i : 0;
-                int inx_k = i_k + y * w;
-                sumR += pix[inx_k].red * kernel[n];
-                sumG += pix[inx_k].green * kernel[n];
-                sumB += pix[inx_k].blue * kernel[n];
+                long ik = x + i < w ? x + i : w;
+                ik = x + i > 0 ? x + i : 0;
+                int inxk = ik + y * w;
+                sumR += pix[inxk].red * kernel[n];
+                sumG += pix[inxk].green * kernel[n];
+                sumB += pix[inxk].blue * kernel[n];
             }
             sumR        = (uint8_t) sumR > 0xff ? 0xff : sumR;
             sumG        = (uint8_t) sumG > 0xff ? 0xff : sumG;
@@ -141,7 +152,7 @@ void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
             {
                 continue;
             }
-            if (mask != NULL && mask[y * w + x] == 0x00)
+            if (isMask(mask, x, y, w))
             {
                 continue;
             }
@@ -195,19 +206,19 @@ void gaussBlurSouce(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mas
                 sumR = sumG = sumB = 0;
             } else
             {
-                if (mask != NULL && mask[y * w + x] == 0x00)
+                if (isMask(mask, x, y, w))
                 {
                     continue;
                 }
                 for (int i = -kradius; i < kradius; ++i)
                 {
-                    long i_k = y + i < h ? y + i : h;
-                    i_k = y + i > 0 ? y + i : 0;
+                    long ik = y + i < h ? y + i : h;
+                    ik = y + i > 0 ? y + i : 0;
                     for (int j = -kradius; j < kradius; ++j)
                     {
-                        long j_k = x + i < w ? x + i : w;
-                        j_k      = x + i > 0 ? x + i : 0;
-                        long inx_k  = i_k * w + j_k;
+                        long jk = x + i < w ? x + i : w;
+                        jk      = x + i > 0 ? x + i : 0;
+                        long inx_k  = ik * w + jk;
                         int  valueR = (pix[inx_k]).red;
                         int  valueG = (pix[inx_k]).green;
                         int  valueB = (pix[inx_k]).blue;
@@ -234,9 +245,147 @@ void gaussBlurSouce(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mas
 }
 
 
+uint8_t median(uint8_t* data, int blurw, int blurh)
+{
+    int value = 0;
+    if (data == NULL)
+    {
+        return value;
+    }
+    int      his[256] = {0};
+    int      size     = blurw * blurh;
+    int      median   = (size - 1) >> 2;
+    for (int i        = 0; i < size; ++i)
+    {
+        his[data[i]]++;
+    }
+    int      count    = 0;
+    for (int i        = 0; i < 256; i++)
+    {
+        count += his[i];
+        if (count > median)
+        {
+            value = i;
+            break;
+        }
+    }
+    return value;
+}
+
+
+void gnMedianBlur1(argb* pix, argb*&dst, int w, int h, jint blurw, jint blurh, uint8_t* mask)
+{
+    if (pix == NULL || blurw < 0 || blurh < 0)
+    {
+        return;
+    }
+    argb* out = (argb*) malloc(sizeof(argb) * w * h);
+    dst = out;
+    uint8_t* tempR = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+    uint8_t* tempG = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+    uint8_t* tempB = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+    for (int i = 0; i < h; i += blurw)
+    {
+        for (int j = 0; j < w; j += blurh)
+        {
+            for (int m = 0; m < blurh; ++m)
+            {
+                for (int n = 0; n < blurw; ++n)
+                {
+                    int x = gnEdge(j + n, w);
+                    int y = gnEdge(i + m, h);
+                    tempR[m * blurw + n] = pix[x + y * w].red;
+                    tempG[m * blurw + n] = pix[x + y * w].green;
+                    tempB[m * blurw + n] = pix[x + y * w].blue;
+                }
+            }
+            argb     value;
+            value.red   = median(tempR, blurw, blurh);
+            value.green = median(tempG, blurw, blurh);
+            value.blue  = median(tempB, blurw, blurh);
+            value.alpha = pix[i * w + j].alpha;
+            for (int m = 0; m < blurh; ++m)
+            {
+                for (int n = 0; n < blurw; ++n)
+                {
+                    int x          = gnEdge(j + n, w);
+                    int y          = gnEdge(i + m, h);
+                    if (isMask(mask, x, y, w))
+                    {
+                        out[x + w * y] = pix[x + w * y];
+                        continue;
+                    }
+                    out[x + w * y] = value;
+//                    out[x + w * y] = value;
+                }
+            }
+        }
+    }
+    free(tempB);
+    free(tempG);
+    free(tempR);
+}
+
+
+void gnMedianBlurAverage(argb* pix, argb*&dst, int w, int h, jint blurw, jint blurh, uint8_t* mask)
+{
+
+    if (pix == NULL || blurw < 0 || blurh < 0)
+    {
+        return;
+    }
+    argb* out = (argb*) malloc(sizeof(argb) * w * h);
+    dst = out;
+    uint8_t* tempR = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+    uint8_t* tempG = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+    uint8_t* tempB = (uint8_t*) malloc(sizeof(uint8_t) * blurw * blurh);
+
+    LOGI("median is start ");
+    for (int i = 0; i < h; i += blurw)
+    {
+        for (int j = 0; j < w; j += blurh)
+        {
+            for (int m = 0; m < blurh; ++m)
+            {
+                for (int n = 0; n < blurw; ++n)
+                {
+                    int x = gnEdge(j + n, w);
+                    int y = gnEdge(i + m, h);
+                    tempR[m * blurw + n] = pix[x + y * w].red;
+                    tempG[m * blurw + n] = pix[x + y * w].green;
+                    tempB[m * blurw + n] = pix[x + y * w].blue;
+                }
+            }
+            argb     value;
+            value.red   = average(tempR, blurw, blurh);
+            value.green = average(tempG, blurw, blurh);
+            value.blue  = average(tempB, blurw, blurh);
+            value.alpha = pix[i * w + j].alpha;
+            for (int m = 0; m < blurh; ++m)
+            {
+                for (int n = 0; n < blurw; ++n)
+                {
+                    int x          = gnEdge(j + n, w);
+                    int y          = gnEdge(i + m, h);
+                    if (isMask(mask, x, y, w))
+                    {
+                        out[x + w * y] = pix[x + w * y];
+                        continue;
+                    }
+                    out[x + w * y] = value;
+                }
+            }
+        }
+    }
+    free(tempB);
+    free(tempG);
+    free(tempR);
+}
+
+
 void gaussBlur(argb* pix, argb*&dst, int w, int h, int radium, int type, uint8_t* mask)
 {
-    if (type == GAUSS_TYPE_FAST)
+    if (type == BLUR_GAUSS_TYPE_FAST)
     {
         gaussBlur2d(pix, dst, w, h, radium, mask);
     } else
@@ -244,3 +393,19 @@ void gaussBlur(argb* pix, argb*&dst, int w, int h, int radium, int type, uint8_t
         gaussBlurSouce(pix, dst, w, h, radium, mask);
     }
 }
+
+
+int
+gnMedianBlur(argb* pix, argb*&dst, int w, int h, jint blurw, jint blurh, jint btype, uint8_t* mask)
+{
+    LOGI("gnMedianBlur start ");
+    if (btype == BLUR_MEDIAN_TYPE_MEDIAN)
+    {
+        gnMedianBlur1(pix, dst, w, h, blurw, blurh, mask);
+    } else
+    {
+        gnMedianBlurAverage(pix, dst, w, h, blurw, blurh, mask);
+    }
+    return 1;
+}
+

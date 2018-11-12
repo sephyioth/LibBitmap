@@ -248,6 +248,24 @@ int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int co
 }
 
 
+uint8_t average(uint8_t* data, int blurw, int blurh)
+{
+    if (data == NULL)
+    {
+        return 0;
+    }
+    int      size = blurw * blurh;
+    double   sum  = 0;
+    double   temp = 0;
+    double   line = 1;
+    for (int i    = 0; i < size; ++i)
+    {
+        sum += data[i];
+    }
+    return sum / size;
+}
+
+
 int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h)
 {
     if (src1 == NULL || src2 == NULL || dst == NULL || w < 0 || h < 0)
@@ -265,9 +283,9 @@ int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h)
 }
 
 
-int inRangeS(uint8_t* src, uint8_t* & dst, int w, int h, int upper, int lower)
+int inRangeS(uint8_t* src, uint8_t*&dst, int w, int h, int upper, int lower)
 {
-    if (src == NULL  || w < 0 || h < 0)
+    if (src == NULL || w < 0 || h < 0)
     {
         return -1;
     }
@@ -280,3 +298,12 @@ int inRangeS(uint8_t* src, uint8_t* & dst, int w, int h, int upper, int lower)
     }
     return 1;
 }
+
+
+int gnEdge(int x, int w)
+{
+    int ret = x > w ? w : x;
+    ret = x > 0 ? x : 0;
+    return ret;
+}
+

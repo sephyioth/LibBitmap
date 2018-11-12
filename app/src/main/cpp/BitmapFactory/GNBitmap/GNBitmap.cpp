@@ -67,9 +67,10 @@ int GNBitmap::copyData(void* data, int btype)
         }
     } else if (type == ANDROID_BITMAP_FORMAT_RGBA_8888 && btype == ANDROID_BITMAP_FORMAT_A_8)
     {
+        LOGI("changed");
         argb   * tdata = (argb*) bitmapData;
         uint8_t* ddata = (uint8_t*) data;
-        for (int i = 0; i < size; ++i)
+        for (int i = 0; i < width * height; ++i)
         {
             tdata[i].blue  = ddata[i];
             tdata[i].green = ddata[i];
