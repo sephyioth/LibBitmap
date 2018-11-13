@@ -19,11 +19,21 @@
 
 #include "../GNBitmapContast.h"
 
-int filter(argb* src, argb*&dst, int w, int h);
+/**
+ * 老照片
+ */
+int oldPhoto(argb* src, argb*&dst, int w, int h);
 
+/**
+ * 雕像
+ */
 int relief(argb* src, argb*&dst, int w, int h);
 
 int lomo(argb* src, argb*&dst, int w, int h, int depth);
+
+int negative(argb* src, argb*&dst, int w, int h);
+
+int mmirror(argb* src, argb*&dst, int width, int height);
 
 
 #endif //LIBBITMAP_FILTER_H

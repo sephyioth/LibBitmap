@@ -255,15 +255,15 @@ int* hist(uint8_t* src, int w, int h)
 }
 
 
-int noise(argb* src, argb* &dst, int width, int height, float k1, float k2)
+int noise(argb* src, argb*&dst, int width, int height, float k1, float k2)
 {
     if (src == NULL || width < 0 || height < 0)
     {
         return -1;
     }
-    int   data[3][3];
-    int   sum = 0;
-    int   p   = 0;
+    int data[3][3];
+    int sum = 0;
+    int p   = 0;
     dst = (argb*) malloc(sizeof(argb) * width * height);
     srand((unsigned) time(NULL));
     for (int y = 1; y <= height - 1; y += 3)
@@ -354,7 +354,7 @@ uint8_t average(uint8_t* data, int blurw, int blurh)
 }
 
 
-int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h)
+int average(uint8_t* src1, uint8_t* src2, uint8_t*&dst, int w, int h)
 {
     if (src1 == NULL || src2 == NULL || dst == NULL || w < 0 || h < 0)
     {
@@ -395,3 +395,13 @@ int gnEdge(int x, int w)
     return ret;
 }
 
+
+argb negativePixelVal(argb value)
+{
+    argb ret;
+    ret.alpha = value.alpha;
+    ret.red   = 255 - value.red;
+    ret.green = 255 - value.green;
+    ret.blue  = 255 - value.blue;
+    return ret;
+}

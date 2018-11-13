@@ -31,20 +31,45 @@ uint8_t* rgb5652argb(uint8_t* data, int width, int height);
 
 uint8_t* argb2gray(argb* bdata, int width, int height);
 
+/**
+ * 色彩转换
+ */
 uint8_t* transColorsA8(GNBitmap* bitmap);
 
+/**
+ * 卷积
+ */
 int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int col, int row);
 
-int average(uint8_t* src1, uint8_t* src2, uint8_t* dst, int w, int h);
+/**两幅图求平均
+ */
+int average(uint8_t* src1, uint8_t* src2, uint8_t*&dst, int w, int h);
 
+/**
+ * 平均值
+ */
 uint8_t average(uint8_t* data, int blurw, int blurh);
 
 int inRangeS(uint8_t* src, uint8_t*&dst, int w, int h, int upper, int lower);
 
+/**
+ * 边角检测
+ */
 int gnEdge(int x, int w);
 
+/**
+ * 检测是否超边界
+ */
 uint8_t checkChannelValue(float value);
 
+/**
+ * 加噪声
+ */
 int noise(argb* src, argb*&dst, int width, int height, float k1, float k2);
+
+/**
+ * 取反
+ */
+argb negativePixelVal(argb value);
 
 #endif //LIBBITMAP_BITMAPUTILLS_H

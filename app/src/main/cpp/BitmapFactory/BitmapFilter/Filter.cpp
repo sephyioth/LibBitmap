@@ -43,7 +43,7 @@ int gnSqrt(int value, int depth)
 }
 
 
-int filter(argb* src, argb*&dst, int w, int h)
+int oldPhoto(argb* src, argb*&dst, int w, int h)
 {
     if (src == NULL || w < 0 || h < 0)
     {
@@ -138,5 +138,51 @@ int lomo(argb* src, argb*&dst, int w, int h, int depth)
         }
     }
     return 1;
+}
 
+
+int negative(argb* src, argb*&dst, int w, int h)
+{
+    if (src == NULL || w < 0 || h < 0)
+    {
+        return 0;
+    }
+    dst        = (argb*) malloc(sizeof(argb) * w * h);
+    for (int y = 0; y < h; ++y)
+    {
+        for (int x = 0; x < w; ++x)
+        {
+            dst[y * w + x] = negativePixelVal(src[y * w + x]);
+        }
+    }
+    return 1;
+}
+
+
+int mmirror(argb* src, argb*&dst, int width, int height)
+{
+    if (src == NULL || width < 0 || height < 0)
+    {
+        return 0;
+    }
+    dst        = (argb*) malloc(sizeof(argb) * width * height);
+    for (int y = 0; y <= (height); y++)
+    {
+        for (int x = 0; x <= (width + 1) / 2; x++)
+        {
+            int R = src[x + y * width].red;
+            int G = src[x + y * width].green;
+            int B = src[x + y * width].blue;
+            int A = src[x + y * width].alpha;
+            dst[x + y * width].red           = R;
+            dst[x + y * width].green         = G;
+            dst[x + y * width].blue          = B;
+            dst[x + y * width].alpha         = A;
+            dst[width - x + y * width].red   = R;
+            dst[width - x + y * width].green = G;
+            dst[width - x + y * width].blue  = B;
+            dst[width - x + y * width].alpha = A;
+        }
+    }
+    return 1;
 }
