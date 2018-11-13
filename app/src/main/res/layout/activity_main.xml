@@ -8,10 +8,19 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/original_imageView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="128dp"
-        tools:layout_editor_absoluteY="191dp"
-        tools:srcCompat="@tools:sample/avatars"/>
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/effect_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/original_imageView"/>
+    <Button
+        android:id="@+id/sobel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/effect_imageView"
+        android:text="Sobel"/>
 </android.support.constraint.ConstraintLayout>
