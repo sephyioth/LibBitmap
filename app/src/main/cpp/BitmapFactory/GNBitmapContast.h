@@ -29,10 +29,12 @@
 
 #define  PI 3.141592653
 
-#define BLUR_GAUSS_TYPE_FAST         0X00
-#define BLUR_GAUSS_TYPE_SOURCE       0X01
-#define BLUR_MEDIAN_TYPE_MEDIAN      0X00
-#define BLUR_MEDIAN_TYPE_AVERAGE     0X02
+#define BLUR_GAUSS_TYPE_FAST            0X00
+#define BLUR_GAUSS_TYPE_SOURCE          0X01
+#define BLUR_MEDIAN_TYPE_MEDIAN         0X00
+#define BLUR_MEDIAN_TYPE_AVERAGE        0X02
+#define EDGE_TYPE_SOBEL                 0x00
+#define EDGE_TYPE_PREWITTE              0x01
 
 
 typedef struct

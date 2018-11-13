@@ -18,11 +18,12 @@
 #include "BitmapFactory/GNCore.h"
 
 
-JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass type, jobject bitmapIn)
-{
 
-    // TODO
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nEdgeImage(JNIEnv* env, jclass type_, jobject bitmapIn,
+jint type)
+{
     GNBitmap* bitmap = praseBitmap(env, bitmapIn);
     int ret = 0;
     if (bitmap != NULL)
@@ -37,14 +38,14 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass typ
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return ret;
     }
-    gnSobel(bitmap);
+    gnDealEdge(bitmap,type);
     AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;
-
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nSharpening(JNIEnv* env, jclass type, jobject bitmapIn)
 {
 
@@ -55,7 +56,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nSharpening(JNIEnv* env, jclass typ
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nPainting(JNIEnv* env, jclass type, jobject bitmapIn,
                                                        jobject bitmapOut)
 {
@@ -66,7 +70,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nPainting(JNIEnv* env, jclass type,
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nCannyImage(JNIEnv* env, jclass type, jobject bitmapIn)
 {
 
@@ -77,7 +84,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nCannyImage(JNIEnv* env, jclass typ
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nPrewitteImage(JNIEnv* env, jclass type,
                                                             jobject bitmapIn)
 {
@@ -88,7 +98,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nPrewitteImage(JNIEnv* env, jclass 
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nOstuImage(JNIEnv* env, jclass type, jobject bitmapIn,
                                                         jobject bitmapOut)
 {
@@ -99,7 +112,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nOstuImage(JNIEnv* env, jclass type
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nRenderPlasma(JNIEnv* env, jclass type,
                                                            jobject bitmapIn, jobject bitmapOut)
 {
@@ -110,7 +126,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nRenderPlasma(JNIEnv* env, jclass t
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramAverage(JNIEnv* env, jclass type,
                                                               jobject bitmapIn, jobject bitmapOut)
 {
@@ -121,7 +140,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramAverage(JNIEnv* env, jclas
 }
 
 
-JNIEXPORT jintArray JNICALL
+JNIEXPORT jintArray
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramImage(JNIEnv* env, jclass type,
                                                             jobject bitmap)
 {
@@ -132,18 +154,39 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramImage(JNIEnv* env, jclass 
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, jobject bitmapIn,
-                                                     jobject bitmapOut)
+                                                     jintArray parames_,
+                                                     jint btype)
 {
+    int* parames = NULL;
+    int size;
+    if (parames_ != NULL)
+    {
+        parames = env->GetIntArrayElements(parames_, NULL);
+        size    = env->GetArrayLength(parames_);
 
-    // TODO
+    }
+    GNBitmap* gbitmap1 = praseBitmap(env, bitmapIn);
+    int ret = 0;
+    if (gbitmap1 == NULL ||
+        (ret = AndroidBitmap_lockPixels(env, bitmapIn, &gbitmap1->bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return ret;
+    }
+    gnFilter(gbitmap1, parames, size);
+    AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;
 
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, jobject bitmapIn,
                                                       jfloat point)
 {
@@ -154,7 +197,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, 
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass type, jobject bitmap,
                                                          jobject mask, jint radium, jint gtype)
 {
@@ -175,16 +221,20 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nGauss2Blur(JNIEnv* env, jclass typ
             return ret;
         }
     }
-    gnGaussBlur(gbitmap1, gbitmap2, radium ,gtype);
+    gnGaussBlur(gbitmap1, gbitmap2, radium, gtype);
     AndroidBitmap_unlockPixels(env, bitmap);
     AndroidBitmap_unlockPixels(env, mask);
     return 1;
 }
 
 
-JNIEXPORT jint JNICALL
+JNIEXPORT jint
+
+
+JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMedianBlur(JNIEnv* env, jclass type, jobject bitmap,
-                                                         jobject mask, jint blurW, jint blurH,jint btype)
+                                                         jobject mask, jint blurW, jint blurH,
+                                                         jint btype)
 {
     GNBitmap* gbitmap1 = praseBitmap(env, bitmap);
     GNBitmap* gbitmap2 = praseBitmap(env, mask);
@@ -206,6 +256,31 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMedianBlur(JNIEnv* env, jclass typ
     gnMedianBlur(gbitmap1, gbitmap2, blurW, blurH, btype);
     AndroidBitmap_unlockPixels(env, bitmap);
     AndroidBitmap_unlockPixels(env, mask);
-    return  1;
+    return 1;
+}
+
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jobject bitmapIn,
+                                                    jfloat k1, jfloat k2)
+{
+    // TODO
+    GNBitmap* bitmap = praseBitmap(env, bitmapIn);
+    int ret = 0;
+    if (bitmap != NULL)
+    {
+        LOGI("parse Suc");
+    } else
+    {
+        LOGI("parse Failed");
+    }
+    if ((ret = AndroidBitmap_lockPixels(env, bitmapIn, &bitmap->bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return ret;
+    }
+    gnNoise(bitmap, k1, k2);
+    AndroidBitmap_unlockPixels(env, bitmapIn);
+    return 1;
 }
 

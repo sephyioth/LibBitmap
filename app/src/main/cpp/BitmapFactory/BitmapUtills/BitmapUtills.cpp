@@ -15,6 +15,7 @@
 */
 
 #include <cstdlib>
+#include <time.h>
 #include "math.h"
 #include "BitmapUtills.h"
 #include "../GNBitmapContast.h"
@@ -245,6 +246,93 @@ int convolution(uint8_t* data, double* model, uint8_t* dst, int w, int h, int co
         }
     }
     return 1;
+}
+
+
+int* hist(uint8_t* src, int w, int h)
+{
+    return NULL;
+}
+
+
+int noise(argb* src, argb* &dst, int width, int height, float k1, float k2)
+{
+    if (src == NULL || width < 0 || height < 0)
+    {
+        return -1;
+    }
+    int   data[3][3];
+    int   sum = 0;
+    int   p   = 0;
+    dst = (argb*) malloc(sizeof(argb) * width * height);
+    srand((unsigned) time(NULL));
+    for (int y = 1; y <= height - 1; y += 3)
+    {
+        for (int x = 1; x < width - 1; x += 3)
+        {
+            int A = src[x + y * width].alpha;
+            sum = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    data[i][j] = src[x + j + (y + i) * width].red;
+                    sum += data[i][j];
+                }
+            }
+            p          = sum / 9;
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    float t1 = k1 * (255 - data[i][j]);
+                    float t2 = k2 * (255 - data[i][j]);
+
+                    if (data[i][j] > p)
+                    {
+                        if (rand() % 255 > t1)
+                        {
+                            dst[x + j + (y + i) * width].red   = 255;
+                            dst[x + j + (y + i) * width].green = 255;
+                            dst[x + j + (y + i) * width].blue  = 255;
+                            dst[x + j + (y + i) * width].alpha = A;
+                        } else
+                        {
+                            dst[x + j + (y + i) * width].red   = 0;
+                            dst[x + j + (y + i) * width].green = 0;
+                            dst[x + j + (y + i) * width].blue  = 0;
+                            dst[x + j + (y + i) * width].alpha = A;
+                        }
+                    } else
+                    {
+                        if (rand() % 255 > t2)
+                        {
+                            dst[x + j + (y + i) * width].red   = 255;
+                            dst[x + j + (y + i) * width].green = 255;
+                            dst[x + j + (y + i) * width].blue  = 255;
+                            dst[x + j + (y + i) * width].alpha = A;
+                        } else
+                        {
+                            dst[x + j + (y + i) * width].red   = 0;
+                            dst[x + j + (y + i) * width].green = 0;
+                            dst[x + j + (y + i) * width].blue  = 0;
+                            dst[x + j + (y + i) * width].alpha = A;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+
+uint8_t checkChannelValue(float value)
+{
+    value = value > 255 ? 255 : value;
+    value = value < 0 ? 0 : value;
+    return value;
 }
 
 

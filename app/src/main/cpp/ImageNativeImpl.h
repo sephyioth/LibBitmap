@@ -23,10 +23,10 @@
 extern "C"
 {
 
-JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nSobelImage(JNIEnv* env, jclass type,
-                                                         jobject bitmapIn);
 
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nEdgeImage(JNIEnv* env, jclass type_, jobject bitmapIn,
+                                                        jint type);
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nSharpening(JNIEnv* env, jclass type,
                                                          jobject bitmapIn);
@@ -39,15 +39,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nCannyImage(JNIEnv* env, jclass typ
                                                          jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nPrewitteImage(JNIEnv* env, jclass type,
-                                                            jobject bitmapIn);
-
-JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nOstuImage(JNIEnv* env, jclass type, jobject bitmapIn);
-
-JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nRenderPlasma(JNIEnv* env, jclass type,
-                                                           jobject bitmapIn);
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramAverage(JNIEnv* env, jclass type,
@@ -58,7 +50,8 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nHistgramImage(JNIEnv* env, jclass 
                                                             jobject bitmap);
 
 JNIEXPORT jint JNICALL
-Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, jobject bitmapIn);
+Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, jobject bitmapIn,
+                                                     jintArray parames_, jint btype);
 
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, jobject bitmapIn,
@@ -73,6 +66,9 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMedianBlur(JNIEnv* env, jclass typ
                                                          jobject mask, jint blurW, jint blurH,
                                                          jint btype);
 
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jobject bitmapIn,
+                                                    jfloat k1, jfloat k2);
 };
 
 #endif //IMAGEJNI_IMAGENATIVEIMPL_H

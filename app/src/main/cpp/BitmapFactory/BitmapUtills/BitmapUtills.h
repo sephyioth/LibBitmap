@@ -43,4 +43,8 @@ int inRangeS(uint8_t* src, uint8_t*&dst, int w, int h, int upper, int lower);
 
 int gnEdge(int x, int w);
 
+uint8_t checkChannelValue(float value);
+
+int noise(argb* src, argb*&dst, int width, int height, float k1, float k2);
+
 #endif //LIBBITMAP_BITMAPUTILLS_H

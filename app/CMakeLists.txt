@@ -12,6 +12,8 @@ file(GLOB source_files "src/main/cpp/*.cpp" "src/main/cpp/*.H"
         "src/main/cpp/BitmapFactory/GNBitmap/*.h"
         "src/main/cpp/BitmapFactory/Blur/*.cpp"
         "src/main/cpp/BitmapFactory/Blur/*.h"
+        "src/main/cpp/BitmapFactory/BitmapFilter/*.cpp"
+        "src/main/cpp/BitmapFactory/BitmapFilter/*.h"
 )
 
 add_library( # Sets the name of the library.

@@ -17,23 +17,36 @@
 #include "android/bitmap.h"
 #include "BitmapUtills/BitmapUtills.h"
 #include "Blur/Blur.h"
+#include "BitmapFilter/Filter.h"
 
 
-int gnSobel(GNBitmap* bitmap)
+int gnDealEdge(GNBitmap* bitmap, int type)
 {
-    uint8_t* data = transColorsA8(bitmap);
+    uint8_t* data                      = transColorsA8(bitmap);
     if (data == NULL)
     {
         return -1;
     }
-    double gxModel[9] = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
-    double gyModel[9] = {1, 2, 1, 0, 0, 0, -1, -2, -1};
-    int    w          = bitmap->width;
-    int    h          = bitmap->height;
+    double* pointx, * pointy;
+    double          gxSobelModel[9]    = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+    double          gySobelModel[9]    = {1, 2, 1, 0, 0, 0, -1, -2, -1};
+    double          gxPrewitteModel[9] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
+    double          gyPrewitteModel[9] = {1, 1, 1, 0, 0, 0, -1, -1, -1};
+    if (type == EDGE_TYPE_SOBEL)
+    {
+        pointx = gxSobelModel;
+        pointy = gySobelModel;
+    } else
+    {
+        pointx = gxPrewitteModel;
+        pointy = gyPrewitteModel;
+    }
+    int w = bitmap->width;
+    int h = bitmap->height;
     uint8_t* tempX = (uint8_t*) malloc(sizeof(uint8_t) * w * h);
     uint8_t* tempY = (uint8_t*) malloc(sizeof(uint8_t) * w * h);
-    convolution(data, gxModel, tempX, w, h, 3, 3);
-    convolution(data, gyModel, tempY, w, h, 3, 3);
+    convolution(data, pointx, tempX, w, h, 3, 3);
+    convolution(data, pointy, tempY, w, h, 3, 3);
     average(tempX, tempY, data, w, h);
     bitmap->copyData(data, ANDROID_BITMAP_FORMAT_A_8);
     free(tempX);
@@ -82,10 +95,34 @@ int gnMedianBlur(GNBitmap* src, GNBitmap* mask, jint blurw, jint blurh, jint bty
             inRangeS(data, gmask, mask->width, mask->height, 0xff, 0x40);
         }
     }
-    argb* argb1 = (argb*) src->bitmapData;
+    argb   * argb1 = (argb*) src->bitmapData;
     gnMedianBlur(argb1, dst, src->width, src->height, blurw, blurh, btype, gmask);
     src->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
     free(dst);
     free(gmask);
+    return 1;
+}
+
+
+int gnFilter(GNBitmap* src, int* parames, int size)
+{
+    argb* dst   = NULL;
+    argb* argb1 = (argb*) src->bitmapData;
+    lomo(argb1, dst, src->width, src->height, 20);
+    src->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(dst);
+    return 1;
+}
+
+
+int gnNoise(GNBitmap* src, float k1, float k2)
+{
+    k1 = k1 < 0 ? 0 : k1;
+    k2 = k2 < 0 ? 0 : k2;
+    argb* dst   = NULL;
+    argb* argb1 = (argb*) src->bitmapData;
+    noise(argb1, dst, src->width, src->height, k1, k2);
+    src->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(dst);
     return 1;
 }

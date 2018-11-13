@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
         bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(), true);
 
-        ImageImpl.medianBlur(bitmap, bitmap2, 10, 10, ImageImpl.MedianType.BLUR_MEDIAN_TYPE_MEDIAN);
+        ImageImpl.perwitteImage(bitmap);
+//        ImageImpl.medianBlur(bitmap, bitmap2, 10, 10, ImageImpl.MedianType
+// .BLUR_MEDIAN_TYPE_MEDIAN);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
         imageView.setImageBitmap(bitmap);
     }

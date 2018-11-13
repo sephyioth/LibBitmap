@@ -13,7 +13,7 @@ import android.util.Log;
  * 修改备注：
  */
 public class ImageImpl {
-    public static enum GaussType {
+    public enum GaussType {
         GAUSSBLUR_FAST(0x00), GAUSSBLUR_SOURCE(0x01);
 
         private final int id;
@@ -21,6 +21,20 @@ public class ImageImpl {
         GaussType (int i) {
             id = i;
         }
+
+        public int getId () {
+            return id;
+        }
+    }
+
+    public enum EdgeType {
+        EDGE_TYPE_SOBEL(0x00), EDGE_TYPE_PREWITTE(0x01);
+
+        EdgeType (int i) {
+            id = i;
+        }
+
+        private final int id;
 
         public int getId () {
             return id;
@@ -42,7 +56,13 @@ public class ImageImpl {
 
     }
 
-    public static int medianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, MedianType type) {
+    public static int noise (Bitmap bitmap, float k1, float k2) {
+        return nNoise(bitmap, k1, k2);
+    }
+
+
+    public static int medianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, MedianType
+            type) {
         return nMedianBlur(bitmap, mask, blurW, blurH, type.getId());
     }
 
@@ -58,107 +78,39 @@ public class ImageImpl {
         nGauss2Blur(bitmap1, bitmap2, radium, type.getId());
     }
 
-    public static Bitmap sobelImage (Bitmap bitmapIn) {
+    public static int sobelImage (Bitmap bitmapIn) {
         if (bitmapIn != null) {
-            nSobelImage(bitmapIn);
-            return bitmapIn;
+            return nEdgeImage(bitmapIn, EdgeType.EDGE_TYPE_SOBEL.getId());
         } else {
             System.out.println("error input bitmap");
-            return null;
+            return 0;
         }
     }
 
-    public static Bitmap cannyImage (Bitmap bitmapIn) {
+    public static int perwitteImage (Bitmap bitmapIn) {
         if (bitmapIn != null) {
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ALPHA_8);
-//            nCannyImage(bitmapIn, bitmapOut);
-            return bitmapOut;
+            return nEdgeImage(bitmapIn, EdgeType.EDGE_TYPE_PREWITTE.getId());
         } else {
             System.out.println("error input bitmap");
-            return null;
+            return 0;
         }
     }
 
-    public static Bitmap prewitteImage (Bitmap bitmapIn) {
-        if (bitmapIn != null) {
-            Bitmap gary = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                    .Config.ALPHA_8);
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ALPHA_8);
-//            nRenderPlasma(bitmapIn, gary);
-//            nPrewitteImage(gary, bitmapOut);
-            gary.recycle();
-            return bitmapOut;
-        } else {
-            System.out.println("error input bitmap");
-            return null;
-        }
-    }
 
-    public static Bitmap ostuImage (Bitmap bitmapIn) {
-        if (bitmapIn != null) {
-            Bitmap gary = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                    .Config.ALPHA_8);
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ALPHA_8);
-//            nRenderPlasma(bitmapIn, gary);
-//            nOstuImage(gary, bitmapOut);
-            gary.recycle();
-            return bitmapOut;
-        } else {
-            System.out.println("error input bitmap");
-            return null;
-        }
-    }
-
-    public static Bitmap renderPlasma (Bitmap bitmapIn) {
-        if (bitmapIn != null) {
-            Log.i("genesis", "width =" + bitmapIn.getWidth() + "  height " + bitmapIn.getHeight());
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ALPHA_8);
-//            nRenderPlasma(bitmapIn, bitmapOut);
-            return bitmapOut;
-        } else {
-            System.out.println("error input bitmap");
-            return null;
-        }
-    }
-
-    public static Bitmap histgramAverage (Bitmap bitmapIn) {
-        if (bitmapIn != null) {
-            Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(),
-                    Bitmap.Config.ARGB_8888);
-//            nHistgramAverage(bitmapIn, bitmapOut);
-            return bitmapOut;
-        } else {
-            System.out.println("error input bitmap");
-            return null;
-        }
-    }
-
-    public static Bitmap friter (Bitmap bitmapIn) {
+    public static int friter (Bitmap bitmapIn) {
         assert bitmapIn == null : "error bitmap ";
-        Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                .Config.ARGB_8888);
-//        nFriter(bitmapIn, bitmapOut);
-        return bitmapOut;
+        nFriter(bitmapIn, null, 0);
+        return 1;
     }
 
-    public static Bitmap mirror (Bitmap bitmapIn) {
+    public static int mirror (Bitmap bitmapIn, float point) {
         assert bitmapIn == null : "error bitmap ";
-        Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                .Config.ARGB_8888);
-//        nMmirror(bitmapIn, bitmapOut, 0.5f);
-        return bitmapOut;
+        return nMmirror(bitmapIn, point);
     }
 
-    public static Bitmap sharpening (Bitmap bitmapIn) {
+    public static int sharpening (Bitmap bitmapIn) {
         assert bitmapIn == null : "error bitmap ";
-        Bitmap bitmapOut = Bitmap.createBitmap(bitmapIn.getWidth(), bitmapIn.getHeight(), Bitmap
-                .Config.ARGB_8888);
-//        nSharpening(bitmapIn, bitmapOut);
-        return bitmapOut;
+        return nSharpening(bitmapIn);
     }
 
     public static int[] histgramImage (Bitmap bitmap) {
@@ -166,25 +118,23 @@ public class ImageImpl {
     }
 
     /****内部接口函数****/
-    private static native int nSobelImage (Bitmap bitmapIn);
+    private static native int nEdgeImage (Bitmap bitmapIn, int type);
 
     private static native int nSharpening (Bitmap bitmapIn);
 
     private static native int nPainting (Bitmap bitmapIn);
 
-    private static native int nCannyImage (Bitmap bitmapIn);
-
     private static native int nPrewitteImage (Bitmap bitmapIn);
 
     private static native int nOstuImage (Bitmap bitmapIn);
-
-    private static native int nRenderPlasma (Bitmap bitmapIn);
 
     private static native int nHistgramAverage (Bitmap bitmapIn);
 
     private static native int[] nHistgramImage (Bitmap bitmap);
 
-    private static native int nFriter (Bitmap bitmapIn);
+    private static native int nFriter (Bitmap bitmapIn, int[] parames, int type);
+
+    private static native int nNoise (Bitmap bitmapIn, float k1, float k2);
 
     private static native int nMmirror (Bitmap bitmapIn, float point);
 

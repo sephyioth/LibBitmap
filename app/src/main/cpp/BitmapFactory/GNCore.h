@@ -19,11 +19,14 @@
 #include "GNBitmap/GNBitmap.h"
 #include "GNBitmapContast.h"
 
-int gnSobel(GNBitmap* bitmap);
+int gnDealEdge(GNBitmap* bitmap, int type);
 
 int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium, int type);
 
 int gnMedianBlur(GNBitmap* src, GNBitmap* mask, jint blurw, jint blurh, jint btype);
 
+int gnFilter(GNBitmap* src, int* parames, int size);
+
+int gnNoise(GNBitmap* src, float k1, float k2);
 
 #endif //LIBBITMAP_GNCORE_H
