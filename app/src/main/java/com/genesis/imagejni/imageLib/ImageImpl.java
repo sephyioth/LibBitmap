@@ -1,7 +1,6 @@
 package com.genesis.imagejni.imageLib;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 /**
  * 项目名称：ImageTest
@@ -14,7 +13,7 @@ import android.util.Log;
  */
 public class ImageImpl {
     public enum GaussType {
-        GAUSSBLUR_FAST(0x00), GAUSSBLUR_SOURCE(0x01);
+        GAUSSBLUR_WH(0x00), GAUSSBLUR_2D(0x01),BLUR_GAUSS_TYPE_STACKBLUR(0X02);
 
         private final int id;
 
@@ -67,13 +66,13 @@ public class ImageImpl {
     }
 
     public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2, int radium) {
-        nGauss2Blur(bitmap1, bitmap2, radium, GaussType.GAUSSBLUR_FAST.getId());
+        nGauss2Blur(bitmap1, bitmap2, radium, GaussType.GAUSSBLUR_WH.getId());
     }
 
 
     public static void gauss2Image (Bitmap bitmap1, Bitmap bitmap2, int radium, GaussType type) {
         if (type == null) {
-            type = GaussType.GAUSSBLUR_FAST;
+            type = GaussType.GAUSSBLUR_WH;
         }
         nGauss2Blur(bitmap1, bitmap2, radium, type.getId());
     }

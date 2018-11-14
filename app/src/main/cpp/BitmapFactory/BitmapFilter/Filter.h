@@ -24,6 +24,7 @@
  */
 int oldPhoto(argb* src, argb*&dst, int w, int h);
 
+int oldPaint(argb* src, argb*&dst, int w, int h,int brushSize,int coarseness);
 /**
  * 雕像
  */

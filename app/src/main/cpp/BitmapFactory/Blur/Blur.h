@@ -38,5 +38,7 @@ void gnMedianBlur1(argb* pix, argb*&dst, int w, int h, jint blurw, jint blurh, u
 
 void gnMedianBlurAverage(argb* pix, argb*&dst, int w, int h, jint blurw, jint blurh, uint8_t* mask);
 
+int stackBlur(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask);
+
 
 #endif //LIBBITMAP_BLUR_H

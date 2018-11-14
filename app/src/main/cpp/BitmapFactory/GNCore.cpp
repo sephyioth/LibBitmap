@@ -108,7 +108,7 @@ int gnFilter(GNBitmap* src, int* parames, int size)
 {
     argb* dst   = NULL;
     argb* argb1 = (argb*) src->bitmapData;
-    mmirror(argb1, dst, src->width, src->height);
+    oldPaint(argb1, dst, src->width, src->height,8,20);
     src->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
     free(dst);
     return 1;

@@ -186,3 +186,67 @@ int mmirror(argb* src, argb*&dst, int width, int height)
     }
     return 1;
 }
+
+
+int oldPaint(argb* src, argb*&dst, int width, int height, int brushSize, int coarseness)
+{
+    brushSize    = gnEdge(brushSize, 8);
+    coarseness   = coarseness < 1 ? 1 : coarseness;
+    coarseness   = coarseness > 255 ? 255 : coarseness;
+    int lenArray = coarseness + 1;
+    int    * countIntensity = new int[lenArray];
+    uint   * redAverage     = new uint[lenArray];
+    uint   * greenAverage   = new uint[lenArray];
+    uint   * blueAverage    = new uint[lenArray];
+    uint8_t* gray           = argb2gray(src, width, height);
+    dst = (argb*) malloc(sizeof(argb) * width * height);
+    for (int y = 0; y < height; ++y)
+    {
+        int      top    = gnEdge(y - brushSize, width);
+        int      bottom = gnEdge(y + brushSize + 1, height);
+        for (int x      = 0; x < width; ++x)
+        {
+            int left  = gnEdge(x - brushSize, width);
+            int right = gnEdge(x + brushSize + 1, width);
+            memset(countIntensity, 0, sizeof(int) * lenArray);
+            memset(redAverage, 0, sizeof(uint) * lenArray);
+            memset(greenAverage, 0, sizeof(uint) * lenArray);
+            memset(blueAverage, 0, sizeof(uint) * lenArray);
+            for (int i               = top; i < bottom; ++i)
+            {
+                for (int j = left; j < right; ++j)
+                {
+                    uint8_t intensity = static_cast<uint8_t>((float) coarseness *
+                                                             gray[i * width + j] /
+                                                             255.0);
+                    countIntensity[intensity]++;
+                    redAverage[intensity] += src[i * width + j].red;
+                    greenAverage[intensity] += src[i * width + j].green;
+                    blueAverage[intensity] += src[i * width + j].blue;
+                }
+            }
+            uint8_t  chosenIntensity = 0;
+            int      maxInstance     = countIntensity[0];
+            for (int i               = 0; i < lenArray; ++i)
+            {
+                if (countIntensity[i] > maxInstance)
+                {
+                    chosenIntensity = i;
+                    maxInstance     = countIntensity[i];
+                }
+            }
+            dst[x + y * width].red   = checkChannelValue(redAverage[chosenIntensity] / maxInstance);
+            dst[x + y * width].green = checkChannelValue(
+                    greenAverage[chosenIntensity] / maxInstance);
+            dst[x + y * width].blue  = checkChannelValue(
+                    blueAverage[chosenIntensity] / maxInstance);
+            dst[x + y * width].alpha = src[x + y * width].alpha;
+        }
+    }
+    delete[]countIntensity;
+    delete[]redAverage;
+    delete[]greenAverage;
+    delete[]blueAverage;
+    free(gray);
+    return 1;
+}

@@ -93,6 +93,202 @@ double* buildGaussKern1d(long radius)
 }
 
 
+int stackBlur(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
+{
+    int wm  = w - 1;
+    int hm  = h - 1;
+    int wh  = w * h;
+    int div = radius + radius + 1;
+    int* r = (int*) malloc(wh * sizeof(int));
+    int* g = (int*) malloc(wh * sizeof(int));
+    int* b = (int*) malloc(wh * sizeof(int));
+    int rsum, gsum, bsum, x, y, i, yp, yi, yw, p;;
+    dst = (argb*) malloc(sizeof(argb) * wh);
+    int* vmin = (int*) malloc(MAX(w, h) * sizeof(int));
+    int divsum = (div + 1) >> 1;
+    divsum *= divsum;
+    int* dv = (int*) malloc(256 * divsum * sizeof(int));
+    for (i = 0; i < 256 * divsum; i++)
+    {
+        dv[i] = (i / divsum);
+    }
+    yw = yi = 0;
+    int(* stack)[3] = (int (*)[3]) malloc(div * 3 * sizeof(int));
+    int stackpointer;
+    int stackstart;
+    int* sir;
+    int rbs;
+    int r1          = radius + 1;
+    int routsum, goutsum, boutsum;
+    int rinsum, ginsum, binsum;
+
+    for (y = 0; y < h; y++)
+    {
+        rinsum       = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+        for (i       = -radius; i <= radius; i++)
+        {
+            int line = yi + (MIN(wm, MAX(i, 0)));
+            p   = pix[line].red << 16 | pix[line].green << 8 | pix[line].blue;
+            sir = stack[i + radius];
+            sir[0] = pix[line].red;
+            sir[1] = pix[line].green;
+            sir[2] = pix[line].blue;
+
+            rbs = r1 - ABS(i);
+            rsum += sir[0] * rbs;
+            gsum += sir[1] * rbs;
+            bsum += sir[2] * rbs;
+            if (i > 0)
+            {
+                rinsum += sir[0];
+                ginsum += sir[1];
+                binsum += sir[2];
+            } else
+            {
+                routsum += sir[0];
+                goutsum += sir[1];
+                boutsum += sir[2];
+            }
+        }
+        stackpointer = radius;
+        for (x       = 0; x < w; x++)
+        {
+            r[yi]      = dv[rsum];
+            g[yi]      = dv[gsum];
+            b[yi]      = dv[bsum];
+            rsum -= routsum;
+            gsum -= goutsum;
+            bsum -= boutsum;
+            stackstart = stackpointer - radius + div;
+            sir        = stack[stackstart % div];
+            routsum -= sir[0];
+            goutsum -= sir[1];
+            boutsum -= sir[2];
+            if (y == 0)
+            {
+                vmin[x] = MIN(x + radius + 1, wm);
+            }
+            int line = yw + vmin[x];
+            p = pix[line].red << 16 | pix[line].green << 8 | pix[line].blue;
+            sir[0]       = pix[line].red;
+            sir[1]       = pix[line].green;
+            sir[2]       = pix[line].blue;
+            rinsum += sir[0];
+            ginsum += sir[1];
+            binsum += sir[2];
+            rsum += rinsum;
+            gsum += ginsum;
+            bsum += binsum;
+            stackpointer = (stackpointer + 1) % div;
+            sir          = stack[(stackpointer) % div];
+            routsum += sir[0];
+            goutsum += sir[1];
+            boutsum += sir[2];
+            rinsum -= sir[0];
+            ginsum -= sir[1];
+            binsum -= sir[2];
+            yi++;
+        }
+        yw += w;
+    }
+    for (x = 0; x < w; x++)
+    {
+        rinsum       = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+        yp           = -radius * w;
+        for (i       = -radius; i <= radius; i++)
+        {
+            yi = MAX(0, yp) + x;
+
+            sir = stack[i + radius];
+
+            sir[0] = r[yi];
+            sir[1] = g[yi];
+            sir[2] = b[yi];
+
+            rbs = r1 - ABS(i);
+
+            rsum += r[yi] * rbs;
+            gsum += g[yi] * rbs;
+            bsum += b[yi] * rbs;
+
+            if (i > 0)
+            {
+                rinsum += sir[0];
+                ginsum += sir[1];
+                binsum += sir[2];
+            } else
+            {
+                routsum += sir[0];
+                goutsum += sir[1];
+                boutsum += sir[2];
+            }
+
+            if (i < hm)
+            {
+                yp += w;
+            }
+        }
+        yi           = x;
+        stackpointer = radius;
+        for (y       = 0; y < h; y++)
+        {
+            dst[yi].alpha = pix[yi].alpha;
+            dst[yi].red   = (dv[rsum]);
+            dst[yi].green = (dv[gsum]);
+            dst[yi].blue  = dv[bsum];
+            rsum -= routsum;
+            gsum -= goutsum;
+            bsum -= boutsum;
+
+            stackstart = stackpointer - radius + div;
+            sir        = stack[stackstart % div];
+
+            routsum -= sir[0];
+            goutsum -= sir[1];
+            boutsum -= sir[2];
+
+            if (x == 0)
+            {
+                vmin[y] = MIN(y + r1, hm) * w;
+            }
+            p = x + vmin[y];
+
+            sir[0] = r[p];
+            sir[1] = g[p];
+            sir[2] = b[p];
+
+            rinsum += sir[0];
+            ginsum += sir[1];
+            binsum += sir[2];
+
+            rsum += rinsum;
+            gsum += ginsum;
+            bsum += binsum;
+
+            stackpointer = (stackpointer + 1) % div;
+            sir          = stack[stackpointer];
+
+            routsum += sir[0];
+            goutsum += sir[1];
+            boutsum += sir[2];
+
+            rinsum -= sir[0];
+            ginsum -= sir[1];
+            binsum -= sir[2];
+
+            yi += w;
+        }
+    }
+    free(r);
+    free(g);
+    free(b);
+    free(vmin);
+    free(dv);
+    free(stack);
+    return 1;
+}
+
+
 void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
 {
     if (pix == NULL || w < 0 || h < 0 || radius < 0)
@@ -154,6 +350,7 @@ void gaussBlur2d(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mask)
             }
             if (isMask(mask, x, y, w))
             {
+                outH[x + y * w] = pix[x + y * w];
                 continue;
             }
             sumB = sumG = sumR = 0;
@@ -208,6 +405,7 @@ void gaussBlurSouce(argb* pix, argb*&dst, int w, int h, int radius, uint8_t* mas
             {
                 if (isMask(mask, x, y, w))
                 {
+                    out[x + y * w] = pix[x + y * w];
                     continue;
                 }
                 for (int i = -kradius; i < kradius; ++i)
@@ -385,12 +583,16 @@ void gnMedianBlurAverage(argb* pix, argb*&dst, int w, int h, jint blurw, jint bl
 
 void gaussBlur(argb* pix, argb*&dst, int w, int h, int radium, int type, uint8_t* mask)
 {
-    if (type == BLUR_GAUSS_TYPE_FAST)
+
+    if (type == BLUR_GAUSS_TYPE_WH)
     {
         gaussBlur2d(pix, dst, w, h, radium, mask);
-    } else
+    } else if (type == BLUR_GAUSS_TYPE_2D)
     {
         gaussBlurSouce(pix, dst, w, h, radium, mask);
+    } else
+    {
+        stackBlur(pix, dst, w, h, radium, mask);
     }
 }
 
