@@ -14,6 +14,13 @@ android {
                 cppFlags "-fexceptions"
             }
         }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-frtti -std=c++11 -fexceptions"
+                arguments '-DANDROID_PLATFORM=android-13',
+                        '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+            }
+        }
     }
     buildTypes {
         release {
@@ -21,6 +28,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets{
+        main{
+            jniLibs.srcDirs = ['src/main/jniLibs/native']
+        }
+    }
+
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"

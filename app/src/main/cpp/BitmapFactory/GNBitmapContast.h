@@ -60,6 +60,19 @@ typedef struct
     uint8_t value;
 } gray;
 
+typedef struct
+{
+    uint x;
+    uint y;
+} point2D;
+
+typedef struct
+{
+    int col;
+    int row;
+    int size;
+    double* data;
+} Matrix;
 enum BitmapType
 {
     GNBITMAP_GRAY,

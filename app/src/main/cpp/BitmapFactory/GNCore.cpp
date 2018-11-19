@@ -18,7 +18,89 @@
 #include "BitmapUtills/BitmapUtills.h"
 #include "Blur/Blur.h"
 #include "BitmapFilter/Filter.h"
+#include "../CL/cl.h"
+#include "../CL/cl_platform.h"
+#include "../aopencl.h"
 
+#define  KERNEL_SRC "\n" \
+
+
+int gpuTask()
+{
+    initFns();
+    /*宿主机变量*/
+    cl_uint numPlatforms; //the NO. of platforms
+    cl_platform_id platform = NULL; //the chosen platform
+    cl_int status;
+    cl_platform_id* platforms;
+    cl_uint numDevices = 0;
+    cl_device_id *devices;
+    cl_context context;
+    cl_command_queue commandQueue;
+    cl_program program;
+    cl_kernel kernel;
+    //size_t global;
+    cl_mem a1, a2, a3;
+
+
+    /*Step1: Getting platforms and choose an available one.*/
+    status = clGetPlatformIDs(0, NULL, &numPlatforms);
+
+    /*For clarity, choose the first available platform. */
+    if (numPlatforms > 0) {
+        platforms = (cl_platform_id*) malloc(
+                numPlatforms * sizeof(cl_platform_id));
+        status = clGetPlatformIDs(numPlatforms, platforms, NULL);
+        platform = platforms[0];
+        free(platforms);
+    }
+
+    /*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
+    status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
+//	if (numDevices == 0) //no GPU available.
+//			{
+//		printf("No GPU device available.\n");
+//		printf("Choose CPU as default device.\n");
+//		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 0, NULL,
+//				&numDevices);
+//		devices = (cl_device_id*) malloc(numDevices * sizeof(cl_device_id));
+//		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, numDevices,
+//				devices, NULL);
+//	} else {
+//		devices = (cl_device_id*) malloc(numDevices * sizeof(cl_device_id));
+//		status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices,
+//				devices, NULL);
+//	}
+    devices = (cl_device_id*) malloc(numDevices * sizeof(cl_device_id));
+    status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices,
+                            NULL);
+
+    /*Step 3: Create context.*/
+    context = clCreateContext(NULL, 1, devices, NULL, NULL, &status);
+
+    /*Step 4: Creating command queue associate with the context.*/
+    commandQueue = clCreateCommandQueue(context, devices[0], 0, &status);
+
+    /*Step 5: Create program object */
+    const char *source = KERNEL_SRC;
+    size_t sourceSize[] = { strlen(source) };
+    program = clCreateProgramWithSource(context, 1, &source, sourceSize,
+                                        &status);
+
+    /*Step 6: Build program. */
+    status = clBuildProgram(program, 1, devices, NULL, NULL, NULL);
+
+
+    /*Step 8: Create kernel object */
+    kernel = clCreateKernel(program, "Sobel", &status);
+
+    // set the argument list for the kernel command
+    status = clSetKernelArg(kernel, 0, sizeof(cl_mem), &a1);
+    status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &a2);
+    status = clSetKernelArg(kernel, 2, sizeof(cl_mem), &a3);
+
+
+}
 
 int gnDealEdge(GNBitmap* bitmap, int type)
 {
@@ -53,7 +135,6 @@ int gnDealEdge(GNBitmap* bitmap, int type)
     free(tempY);
     return 1;
 }
-
 
 int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium, int type)
 {

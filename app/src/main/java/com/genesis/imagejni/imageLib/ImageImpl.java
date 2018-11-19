@@ -145,6 +145,8 @@ public class ImageImpl {
     static {
         try {
             System.loadLibrary("gimage");
+            System.loadLibrary("opencv_java3");
+
         } catch (Exception e) {
             System.out.println("LoadLib error");
         }
