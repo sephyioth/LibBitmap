@@ -50,6 +50,12 @@ int GNBitmap::recycle()
 }
 
 
+IplImage* GNBitmap::getCvImage()
+{
+    return image;
+}
+
+
 int GNBitmap::copyData(void* data, int btype)
 {
     if (data == NULL)

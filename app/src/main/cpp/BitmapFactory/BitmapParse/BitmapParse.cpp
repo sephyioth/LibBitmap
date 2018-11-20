@@ -24,9 +24,10 @@ GNBitmap* praseBitmap(JNIEnv* env, jobject jobject1)
     {
         return NULL;
     }
-    GNBitmap* bitmap = new GNBitmap();
+    GNBitmap* bitmap           = new GNBitmap();
     AndroidBitmapInfo infoin;
-    int ret = 0;
+    int               chensize = 0;
+    int               ret      = 0;
     if ((ret = AndroidBitmap_getInfo(env, jobject1, &infoin)) < 0)
     {
         LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
@@ -41,19 +42,25 @@ GNBitmap* praseBitmap(JNIEnv* env, jobject jobject1)
     if (infoin.format == ANDROID_BITMAP_FORMAT_RGBA_8888)
     {
         bitmap->chennel = 4;
+        chensize = 4;
     } else if (infoin.format == ANDROID_BITMAP_FORMAT_A_8)
     {
         bitmap->chennel = 1;
+        chensize = 1;
     } else if (infoin.format == ANDROID_BITMAP_FORMAT_RGB_565 ||
                infoin.format == ANDROID_BITMAP_FORMAT_RGBA_4444)
     {
         bitmap->chennel = 4;
+        chensize = 2;
     }
-    if ((ret = AndroidBitmap_lockPixels(env, jobject1, &bitmap->bitmapData)) < 0)
+    if ((ret       = AndroidBitmap_lockPixels(env, jobject1, &bitmap->bitmapData)) < 0)
     {
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return NULL;
     }
+    bitmap->image = cvCreateImageHeader(cvSize(bitmap->width, bitmap->height), IPL_DEPTH_8U,
+                                        chensize);
+    cvSetData(bitmap->image, bitmap->bitmapData, bitmap->width * chensize);
     return bitmap;
 }
 

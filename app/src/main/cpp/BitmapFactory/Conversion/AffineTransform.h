@@ -16,6 +16,14 @@
 #ifndef LIBBITMAP_AFFINETRANSFORM_H
 #define LIBBITMAP_AFFINETRANSFORM_H
 
+#include "../GNBitmapContast.h"
+
+class AffineTrans
+{
+public:
+    int cAffineTrans(IplImage* src, IplImage*& dst, point2D* points, int length);
+
+};
 
 
 #endif //LIBBITMAP_AFFINETRANSFORM_H

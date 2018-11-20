@@ -16,16 +16,6 @@
 #include "ImageNativeImpl.h"
 #include "BitmapFactory/BitmapParse/BitmapParse.h"
 #include "BitmapFactory/GNCore.h"
-#include "opencv/highgui.h"
-#include "opencv/cv.h"
-#include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/imgproc_c.h"
-#include "opencv2/core/types_c.h"
-#include "opencv2/imgproc/types_c.h"
-#include "opencv2/core/hal/interface.h"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/core/types.hpp"
-#include <opencv2/opencv.hpp>
 
 using namespace cv;
 
@@ -288,33 +278,29 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jo
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return ret;
     }
+    int length = 4;
+    point2D* dstPoint = (point2D*) malloc(sizeof(point2D) * length);
+    double x[4] = {0};
+    double y[4] = {0};
+    x[0] = bitmap->width * 0.05;
+    x[1] = bitmap->width * 0.9;
+    x[2] = bitmap->width * 0.2f;
+    x[3] = bitmap->width * 0.8;
+    y[0] = bitmap->height * 0.33;
+    y[1] = bitmap->height * 0.25;
+    y[2] = bitmap->height * 0.7f;
+    y[3] = bitmap->height * 0.9f;
+
+    for (int i = 0; i < length; ++i)
+    {
+        dstPoint[i].x = x[i];
+        dstPoint[i].y = y[i];
+    }
+    IplImage* dst;
+    gncvAffineTransfrom(bitmap, dst, dstPoint, length);
+    bitmap->copyData(dst->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
 //    gnNoise(bitmap, k1, k2);
-//    Mat image(bitmap->height, bitmap->width, CV_8UC4, bitmap->bitmapData);
-
-    LOGI("STEP1  CV START");
-    IplImage* image = cvCreateImageHeader(cvSize(bitmap->width, bitmap->height), IPL_DEPTH_8U, 4);
-    cvSetData(image, bitmap->bitmapData, 4 * bitmap->width);
-    IplImage* out = cvCreateImage(cvSize(bitmap->width, bitmap->height), IPL_DEPTH_8U, 4);
-    cvSmooth(image, out, CV_GAUSSIAN, 81, 81);
-    LOGI("STEP1  CV END");
-
-    LOGI("STEP2  BLUR_GAUSS_TYPE_WH START");
-    gnGaussBlur(bitmap, NULL, 30, BLUR_GAUSS_TYPE_WH);
-    LOGI("STEP2  BLUR_GAUSS_TYPE_WH END");
-
-
-    LOGI("STEP3  BLUR_GAUSS_TYPE_WH START");
-    gnGaussBlur(bitmap, NULL, 30, BLUR_GAUSS_TYPE_STACKBLUR);
-    LOGI("STEP3  BLUR_GAUSS_TYPE_WH END");
-
-
-    bitmap->copyData(out->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
-    //Please make attention about BGRA byte order
-    //ARGB stored in java as int array becomes BGRA at native level
-
     AndroidBitmap_unlockPixels(env, bitmapIn);
-
-
     return 1;
 }
 

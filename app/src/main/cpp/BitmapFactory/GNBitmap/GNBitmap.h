@@ -21,7 +21,9 @@
 #include "malloc.h"
 #include "memory.h"
 #include <stdint.h>
+#include "../GNBitmapContast.h"
 
+using namespace cv;
 
 class GNBitmap
 {
@@ -32,7 +34,8 @@ public:
     int flag;
     int stride;
     int type;
-    void* bitmapData;
+    void    * bitmapData;
+    IplImage* image;
 
 private:
     bool isCopyBitmap;
@@ -59,6 +62,8 @@ public:
     int recycle();
 
     int copyData(void* data, int type);
+
+    IplImage* getCvImage();
 
 private:
     int getBitmapChannelSize();

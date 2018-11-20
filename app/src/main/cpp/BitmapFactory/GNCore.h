@@ -29,4 +29,9 @@ int gnFilter(GNBitmap* src, int* parames, int size);
 
 int gnNoise(GNBitmap* src, float k1, float k2);
 
+int gncvAffineTransfrom(GNBitmap* src, IplImage*&dst, point2D* points, int length);
+
+int gncvWarpPerspective(GNBitmap* src, IplImage*&dst, point2D* points, int length);
+
+
 #endif //LIBBITMAP_GNCORE_H

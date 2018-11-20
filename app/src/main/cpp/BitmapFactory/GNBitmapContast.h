@@ -20,6 +20,16 @@
 #include <android/bitmap.h>
 #include "stdio.h"
 #include "malloc.h"
+#include "opencv/highgui.h"
+#include "opencv/cv.h"
+#include "opencv2/core/core_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/core/types_c.h"
+#include "opencv2/imgproc/types_c.h"
+#include "opencv2/core/hal/interface.h"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/core/types.hpp"
+#include <opencv2/opencv.hpp>
 
 
 #define  LOG_TAG    "libGenesisBitmap"
@@ -62,8 +72,8 @@ typedef struct
 
 typedef struct
 {
-    uint x;
-    uint y;
+    float x;
+    float y;
 } point2D;
 
 typedef struct

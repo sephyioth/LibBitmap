@@ -21,42 +21,45 @@
 #include "../CL/cl.h"
 #include "../CL/cl_platform.h"
 #include "../aopencl.h"
+#include "Conversion/ConversionTransForm.h"
 
 #define  KERNEL_SRC "\n" \
+
 
 
 int gpuTask()
 {
     initFns();
     /*宿主机变量*/
-    cl_uint numPlatforms; //the NO. of platforms
+    cl_uint        numPlatforms; //the NO. of platforms
     cl_platform_id platform = NULL; //the chosen platform
-    cl_int status;
+    cl_int         status;
     cl_platform_id* platforms;
     cl_uint numDevices = 0;
-    cl_device_id *devices;
-    cl_context context;
+    cl_device_id* devices;
+    cl_context       context;
     cl_command_queue commandQueue;
-    cl_program program;
-    cl_kernel kernel;
+    cl_program       program;
+    cl_kernel        kernel;
     //size_t global;
-    cl_mem a1, a2, a3;
+    cl_mem           a1, a2, a3;
 
 
     /*Step1: Getting platforms and choose an available one.*/
     status = clGetPlatformIDs(0, NULL, &numPlatforms);
 
     /*For clarity, choose the first available platform. */
-    if (numPlatforms > 0) {
+    if (numPlatforms > 0)
+    {
         platforms = (cl_platform_id*) malloc(
                 numPlatforms * sizeof(cl_platform_id));
-        status = clGetPlatformIDs(numPlatforms, platforms, NULL);
-        platform = platforms[0];
+        status    = clGetPlatformIDs(numPlatforms, platforms, NULL);
+        platform  = platforms[0];
         free(platforms);
     }
 
     /*Step 2:Query the platform and choose the first GPU device if has one.Otherwise use the CPU as device.*/
-    status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
+    status  = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
 //	if (numDevices == 0) //no GPU available.
 //			{
 //		printf("No GPU device available.\n");
@@ -72,8 +75,8 @@ int gpuTask()
 //				devices, NULL);
 //	}
     devices = (cl_device_id*) malloc(numDevices * sizeof(cl_device_id));
-    status = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices,
-                            NULL);
+    status  = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, numDevices, devices,
+                             NULL);
 
     /*Step 3: Create context.*/
     context = clCreateContext(NULL, 1, devices, NULL, NULL, &status);
@@ -82,8 +85,8 @@ int gpuTask()
     commandQueue = clCreateCommandQueue(context, devices[0], 0, &status);
 
     /*Step 5: Create program object */
-    const char *source = KERNEL_SRC;
-    size_t sourceSize[] = { strlen(source) };
+    const char* source = KERNEL_SRC;
+    size_t sourceSize[] = {strlen(source)};
     program = clCreateProgramWithSource(context, 1, &source, sourceSize,
                                         &status);
 
@@ -101,6 +104,7 @@ int gpuTask()
 
 
 }
+
 
 int gnDealEdge(GNBitmap* bitmap, int type)
 {
@@ -135,6 +139,7 @@ int gnDealEdge(GNBitmap* bitmap, int type)
     free(tempY);
     return 1;
 }
+
 
 int gnGaussBlur(GNBitmap* gbitmap1, GNBitmap* gbitmap2, int radium, int type)
 {
@@ -189,7 +194,7 @@ int gnFilter(GNBitmap* src, int* parames, int size)
 {
     argb* dst   = NULL;
     argb* argb1 = (argb*) src->bitmapData;
-    oldPaint(argb1, dst, src->width, src->height,8,20);
+    oldPaint(argb1, dst, src->width, src->height, 8, 20);
     src->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
     free(dst);
     return 1;
@@ -207,3 +212,19 @@ int gnNoise(GNBitmap* src, float k1, float k2)
     free(dst);
     return 1;
 }
+
+
+int gncvAffineTransfrom(GNBitmap* src, IplImage*&dst, point2D* points, int length)
+{
+    cvnAffineTransfrom(src->image, dst, points, length);
+    return 1;
+}
+
+
+
+int gncvWarpPerspective(GNBitmap* src, IplImage*&dst, point2D* points, int length)
+{
+    cvnWarpPerspective(src->image, dst, points, length);
+    return 1;
+}
+

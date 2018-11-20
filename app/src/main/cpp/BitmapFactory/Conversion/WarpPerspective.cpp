@@ -1,22 +1,22 @@
 //
-// Created by 凌志 on 2018/11/15.
+// Created by 凌志 on 2018/11/20.
 //
 /**   
 *    
 * 项目名称：LibBitmap      
 * 类描述：   
 * 创建人：genesis   
-* 创建时间：2018/11/15 4:48 PM   
+* 创建时间：2018/11/20 1:52 PM   
 * 修改人：genesis  
-* 修改时间：2018/11/15 4:48 PM   
+* 修改时间：2018/11/20 1:52 PM   
 * 修改备注：   
 * @version    
 *    
 */
-#include "AffineTransform.h"
+#include "WarpPerspective.h"
 
 
-int AffineTrans::cAffineTrans(IplImage* src, IplImage*&dst, point2D* points, int length)
+int WarpPerspective::cWarpPerspective(IplImage* src, IplImage*&dst, point2D* points, int length)
 {
     if (src == NULL)
     {
@@ -35,17 +35,12 @@ int AffineTrans::cAffineTrans(IplImage* src, IplImage*&dst, point2D* points, int
     srcTri[1] = cvPoint2D32f(src->width - 1, 0);
     srcTri[2] = cvPoint2D32f(0, src->height - 1);
     srcTri[3] = cvPoint2D32f(src->width - 1, src->height - 1);
-
     for (int i = 0; i < length; ++i)
     {
         dstTri[i] = cvPoint2D32f(points[i].x, points[i].y);
     }
-//    cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-//    cvWarpPerspective(src, dst, warp_mat);
-
-    free(warp_mat);
-    free(srcTri);
-    free(dstTri);
+    cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
+    cvWarpPerspective(src, dst, warp_mat);
 #ifdef  DEBUG
     CvFont font;
     cvInitFont(&font, CV_FONT_HERSHEY_COMPLEX, 0.5, 0.5, 1, 2, 8);
@@ -61,5 +56,7 @@ int AffineTrans::cAffineTrans(IplImage* src, IplImage*&dst, point2D* points, int
     cvPutText(dst, "point 3", cvPoint(x3, y3), &font, CV_RGB(0xff, 0x00, 0x00));
     cvCircle(dst, pt,10, CV_RGB(0xff, 0x00, 0x00));
 #endif
+    free(srcTri);
+    free(dstTri);
     return 1;
 }

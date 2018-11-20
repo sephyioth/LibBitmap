@@ -18,9 +18,15 @@
 
 
 #include "../GNBitmapContast.h"
+#include "AffineTransform.h"
+#include "PerspectiveTransform.h"
 
 int affineTransfrom(argb* src, argb* dst, int width, int height, point2D* points, int length);
 
 int warpPerspective(argb* src, argb* dst, int width, int height, point2D* points, int length);
+
+int cvnAffineTransfrom(IplImage* src, IplImage*&dst, point2D* points, int length);
+
+int cvnWarpPerspective(IplImage* src, IplImage*&dst, point2D* points, int length);
 
 #endif //LIBBITMAP_CONVERSIONTRANSFORM_H
