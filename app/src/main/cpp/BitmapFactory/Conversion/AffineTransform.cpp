@@ -26,22 +26,20 @@ int AffineTrans::cAffineTrans(IplImage* src, IplImage*&dst, point2D* points, int
     CvPoint2D32f* dstTri;
     dstTri = (CvPoint2D32f*) malloc(sizeof(CvPoint2D32f) * length);
     srcTri = (CvPoint2D32f*) malloc(sizeof(CvPoint2D32f) * length);
-    CvMat* rot_mat  = cvCreateMat(3, 3, CV_32FC1);
-    CvMat* warp_mat = cvCreateMat(3, 3, CV_32FC1);
+    CvMat* rot_mat  = cvCreateMat(2, 3, CV_32FC1);
+    CvMat* warp_mat = cvCreateMat(2, 3, CV_32FC1);
     dst = cvCloneImage(src);
     dst->origin = src->origin;
     cvSetZero(dst);
     srcTri[0] = cvPoint2D32f(0, 0);
     srcTri[1] = cvPoint2D32f(src->width - 1, 0);
     srcTri[2] = cvPoint2D32f(0, src->height - 1);
-    srcTri[3] = cvPoint2D32f(src->width - 1, src->height - 1);
-
     for (int i = 0; i < length; ++i)
     {
         dstTri[i] = cvPoint2D32f(points[i].x, points[i].y);
     }
-//    cvGetPerspectiveTransform(srcTri, dstTri, warp_mat);
-//    cvWarpPerspective(src, dst, warp_mat);
+    cvGetAffineTransform(srcTri, dstTri, warp_mat);
+    cvWarpAffine(src, dst, warp_mat);
 
     free(warp_mat);
     free(srcTri);
