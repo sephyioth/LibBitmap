@@ -405,3 +405,51 @@ argb negativePixelVal(argb value)
     ret.blue  = 255 - value.blue;
     return ret;
 }
+
+
+int filterBorder(argb*&src, int width, int height)
+{
+    if (src == NULL)
+    {
+        return 0;
+    }
+    int  w     = width / 2;
+    int  h     = height / 2;
+    argb temps = src[100 * width + 100];
+
+    LOGI("r : %d %g : %d :b %d", temps.red, temps.green, temps.blue);
+
+    for (int i = 0; i < height; ++i)
+    {
+        bool     isLeftBoard  = false;
+        bool     isRightBoard = false;
+        for (int j            = 0; j < width; ++j)
+        {
+            argb temp  = src[i * width + j];
+            argb tempb = src[i * width + width - j - 1];
+            if (!isLeftBoard && temp.red == 0x00 && temp.green == 0x00 && temp.blue == 0x00)
+            {
+                src[i * width + j].alpha = 0x80;
+                src[i * width + j].red   = 0xff;
+                src[i * width + j].blue  = 0xff;
+                src[i * width + j].green = 0x00;
+            } else
+            {
+                isLeftBoard = true;
+            }
+            if (!isRightBoard && tempb.red == 0x00 && tempb.green == 0x00 && tempb.blue == 0x00)
+            {
+                src[i * width + width - j - 1].alpha = 0x80;
+                src[i * width + width - j - 1].red   = 0xff;
+                src[i * width + width - j - 1].blue  = 0xff;
+                src[i * width + width - j - 1].green = 0x00;
+            } else
+            {
+                isRightBoard = true;
+            }
+        }
+    }
+
+
+    return 1;
+}

@@ -73,4 +73,7 @@ int noise(argb* src, argb*&dst, int width, int height, float k1, float k2);
  */
 argb negativePixelVal(argb value);
 
+
+int filterBorder(argb*&src, int width, int height);
+
 #endif //LIBBITMAP_BITMAPUTILLS_H
