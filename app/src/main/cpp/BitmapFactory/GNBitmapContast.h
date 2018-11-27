@@ -76,13 +76,6 @@ typedef struct
     float y;
 } point2D;
 
-typedef struct
-{
-    int col;
-    int row;
-    int size;
-    double* data;
-} Matrix;
 enum BitmapType
 {
     GNBITMAP_GRAY,

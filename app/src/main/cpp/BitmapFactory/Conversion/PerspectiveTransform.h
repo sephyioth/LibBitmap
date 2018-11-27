@@ -17,9 +17,12 @@
 #define LIBBITMAP_PERSPECTIVETRANSFORM_H
 
 #include "../GNBitmapContast.h"
+#include "../BitmapUtills/Matrix.h"
 
-double* getPerspectiveTransform(point2D* srcTri, point2D* dstTri, Matrix*&warp_mat);
+using namespace gnImage;
 
-int warpPerspective(argb* src, argb* dst, Matrix* matrix);
+double* nativeGetPerspectiveTransform(point2D* src, point2D* dst, Matrix*&warp_mat);
+
+int nativeWarpPerspective(argb* src, argb* dst, Matrix* matrix);
 
 #endif //LIBBITMAP_PERSPECTIVETRANSFORM_H

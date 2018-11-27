@@ -16,6 +16,8 @@ file(GLOB source_files "src/main/cpp/*.cpp" "src/main/cpp/*.H" "src/main/cpp/*.c
         "src/main/cpp/BitmapFactory/BitmapParse/*.cpp"
         "src/main/cpp/BitmapFactory/BitmapUtills/*.cpp"
         "src/main/cpp/BitmapFactory/BitmapUtills/*.h"
+        "src/main/cpp/BitmapFactory/BitmapUtills/Matrix.h"
+        "src/main/cpp/BitmapFactory/BitmapUtills/Matrix.cpp"
         "src/main/cpp/BitmapFactory/GNBitmap/*.cpp"
         "src/main/cpp/BitmapFactory/GNBitmap/*.h"
         "src/main/cpp/BitmapFactory/Blur/*.cpp"
@@ -26,6 +28,7 @@ file(GLOB source_files "src/main/cpp/*.cpp" "src/main/cpp/*.H" "src/main/cpp/*.c
         "src/main/cpp/BitmapFactory/BitmapFilter/*.h"
         "src/main/cpp/CL/*.hpp"
         "src/main/cpp/CL/*.h"
+        "src/main/cpp/ImageNativeImpl.cpp"
         )
 
 add_library( # Sets the name of the library.

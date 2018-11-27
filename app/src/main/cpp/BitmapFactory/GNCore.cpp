@@ -44,7 +44,6 @@ int gpuTask()
     //size_t global;
     cl_mem           a1, a2, a3;
 
-
     /*Step1: Getting platforms and choose an available one.*/
     status = clGetPlatformIDs(0, NULL, &numPlatforms);
 

@@ -21,7 +21,6 @@
 
 using namespace cv;
 
-
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nEdgeImage(JNIEnv* env, jclass type_, jobject bitmapIn,
                                                         jint type)

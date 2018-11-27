@@ -123,7 +123,7 @@ public class ImageImpl {
 
     private static native int nPainting (Bitmap bitmapIn);
 
-    private static native int nPrewitteImage (Bitmap bitmapIn);
+//    private static native int nPrewitteImage (Bitmap bitmapIn);
 
     private static native int nOstuImage (Bitmap bitmapIn);
 
