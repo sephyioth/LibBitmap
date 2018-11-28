@@ -23,6 +23,8 @@ class AffineTrans
 public:
     int cAffineTrans(IplImage* src, IplImage*& dst, point2D* points, int length);
 
+    int nativeAffineTrans();
+
 };
 
 

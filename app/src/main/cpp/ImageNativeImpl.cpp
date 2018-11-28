@@ -307,9 +307,10 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jo
         dstPoint[i].x = x[i];
         dstPoint[i].y = y[i];
     }
-    IplImage* dst;
-    gncvAffineTransfrom(bitmap, dst, dstPoint, length);
-    bitmap->copyData(dst->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
+//    IplImage* dst;
+//    gncvAffineTransfrom(bitmap, dst, dstPoint, length);
+    gnnativeWarpPerspective(bitmap,dstPoint,length);
+//    bitmap->copyData(dst->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
 //    gnNoise(bitmap, k1, k2);
     AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;

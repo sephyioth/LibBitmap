@@ -17,12 +17,26 @@
 #define LIBBITMAP_WARPPERSPECTIVE_H
 
 #include "../GNBitmapContast.h"
+#include "../BitmapUtills/Matrix.h"
+
+using namespace gnImage;
 
 class WarpPerspective
 {
 
 public:
-    int cWarpPerspective(IplImage* src, IplImage*& dst, point2D* points, int length);
+    int cWarpPerspective(IplImage* src, IplImage*&dst, point2D* points, int length);
+
+    int nativeWarpPerspective(argb* src, argb*&dst, int width, int height, double* matrix);
+
+    int nativeWarpPerspective(argb* src, argb*&dst, int width, int height, point2D* points,
+                              int length);
+
+    int nativeWarpPerspective(argb* src, argb*&dst, int width, int height, Matrix matrix);
+
+private:
+    double* nativeGetPerspectiveTransform(point2D* src, point2D* dst, Matrix*&warp_mat);
+
 
 };
 

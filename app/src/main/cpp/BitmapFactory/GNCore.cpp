@@ -101,6 +101,7 @@ int gpuTask()
     status = clSetKernelArg(kernel, 1, sizeof(cl_mem), &a2);
     status = clSetKernelArg(kernel, 2, sizeof(cl_mem), &a3);
 
+    return 1;
 
 }
 
@@ -220,10 +221,35 @@ int gncvAffineTransfrom(GNBitmap* src, IplImage*&dst, point2D* points, int lengt
 }
 
 
-
 int gncvWarpPerspective(GNBitmap* src, IplImage*&dst, point2D* points, int length)
 {
     cvnWarpPerspective(src->image, dst, points, length);
     return 1;
 }
 
+
+int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length)
+{
+
+    if (src == NULL)
+    {
+        LOGE("gnnativeWarpPerspective error SRC");
+        return 1;
+
+    }
+    if (points == NULL)
+    {
+        LOGE("gnnativeWarpPerspective  error POINT ");
+        return 1;
+    }
+    argb* argb1;
+    argb* src1 = static_cast<argb*>(src->bitmapData);
+    nWarpPerspective(src1, argb1, src->width, src->height, points, length);
+    if (argb1 == NULL)
+    {
+        LOGE("error argb1 is null:");
+    }
+    src->copyData(argb1, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(argb1);
+    return 1;
+}

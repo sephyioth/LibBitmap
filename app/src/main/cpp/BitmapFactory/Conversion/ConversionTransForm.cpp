@@ -15,7 +15,7 @@
 */
 #include "ConversionTransForm.h"
 #include "WarpPerspective.h"
-
+#include "AffineTransform.h"
 
 int cvnAffineTransfrom(IplImage* src, IplImage*&dst, point2D* points, int length)
 {
@@ -25,9 +25,17 @@ int cvnAffineTransfrom(IplImage* src, IplImage*&dst, point2D* points, int length
 }
 
 
-int cvnWarpPerspective(IplImage* src, IplImage* &dst, point2D* points, int length)
+int cvnWarpPerspective(IplImage* src, IplImage*&dst, point2D* points, int length)
 {
     WarpPerspective warpPerspective1;
     warpPerspective1.cWarpPerspective(src, dst, points, length);
+    return 1;
+}
+
+
+int nWarpPerspective(argb* src, argb*&dst, int width, int height, point2D* points, int length)
+{
+    WarpPerspective warpPerspective1;
+    warpPerspective1.nativeWarpPerspective(src, dst, width, height, points, length);
     return 1;
 }

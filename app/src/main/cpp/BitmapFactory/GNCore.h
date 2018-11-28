@@ -33,5 +33,7 @@ int gncvAffineTransfrom(GNBitmap* src, IplImage*&dst, point2D* points, int lengt
 
 int gncvWarpPerspective(GNBitmap* src, IplImage*&dst, point2D* points, int length);
 
+int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length);
+
 
 #endif //LIBBITMAP_GNCORE_H
