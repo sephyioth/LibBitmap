@@ -2,6 +2,8 @@ package com.genesis.imagejni.imageLib;
 
 import android.graphics.Bitmap;
 
+import java.util.concurrent.ConcurrentNavigableMap;
+
 /**
  * 项目名称：ImageTest
  * 类描述：
@@ -13,7 +15,7 @@ import android.graphics.Bitmap;
  */
 public class ImageImpl {
     public enum GaussType {
-        GAUSSBLUR_WH(0x00), GAUSSBLUR_2D(0x01),BLUR_GAUSS_TYPE_STACKBLUR(0X02);
+        GAUSSBLUR_WH(0x00), GAUSSBLUR_2D(0x01), BLUR_GAUSS_TYPE_STACKBLUR(0X02);
 
         private final int id;
 
@@ -38,6 +40,21 @@ public class ImageImpl {
         public int getId () {
             return id;
         }
+    }
+
+    public enum ConversionType {
+        TYPE_CV_WARP(0X00), TYPE_NATIVE_WARP(0X01);
+
+        private final int id;
+
+        ConversionType (int i) {
+            id = i;
+        }
+
+        public int getId () {
+            return id;
+        }
+
     }
 
     public enum MedianType {
@@ -95,6 +112,12 @@ public class ImageImpl {
         }
     }
 
+    public static int warpPerspective (Bitmap bitmap, int[][] local) {
+        assert (bitmap == null);
+        nWarpPerspective(bitmap, local, ConversionType.TYPE_NATIVE_WARP.getId());
+        return 1;
+    }
+
 
     public static int friter (Bitmap bitmapIn) {
         assert bitmapIn == null : "error bitmap ";
@@ -141,6 +164,8 @@ public class ImageImpl {
 
     private static native int nMedianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, int
             type);
+
+    private static native int nWarpPerspective (Bitmap bitmap, int[][] local, int type);
 
     static {
         try {

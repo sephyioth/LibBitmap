@@ -69,6 +69,11 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nMedianBlur(JNIEnv* env, jclass typ
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jobject bitmapIn,
                                                     jfloat k1, jfloat k2);
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nWarpPerspective(JNIEnv* env, jclass type_,
+                                                              jobject bitmap, jobjectArray local,
+                                                              jint type);
 };
 
 #endif //IMAGEJNI_IMAGENATIVEIMPL_H

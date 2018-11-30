@@ -239,8 +239,16 @@ int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length)
     }
     if (points == NULL)
     {
-        LOGE("gnnativeWarpPerspective  error POINT ");
+        LOGE("gnnativeWarpPerspective  error POINT null ");
         return 1;
+    }
+    for (int i = 0; i < length; ++i)
+    {
+        if (!isInRect(points[i].x, points[i].y, src->width, src->height))
+        {
+            LOGE("gnnativeWarpPerspective  error POINT ");
+            return 0;
+        }
     }
     argb* argb1;
     argb* src1 = static_cast<argb*>(src->bitmapData);

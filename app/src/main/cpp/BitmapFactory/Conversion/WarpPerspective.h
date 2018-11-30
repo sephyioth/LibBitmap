@@ -35,7 +35,7 @@ public:
     int nativeWarpPerspective(argb* src, argb*&dst, int width, int height, Matrix matrix);
 
 private:
-    double* nativeGetPerspectiveTransform(point2D* src, point2D* dst, Matrix*&warp_mat);
+    double* nativeGetPerspectiveTransform(point2D* src, point2D* dst);
 
 
 };

@@ -21,6 +21,7 @@
 
 using namespace cv;
 
+
 JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nEdgeImage(JNIEnv* env, jclass type_, jobject bitmapIn,
                                                         jint type)
@@ -309,10 +310,54 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jo
     }
 //    IplImage* dst;
 //    gncvAffineTransfrom(bitmap, dst, dstPoint, length);
-    gnnativeWarpPerspective(bitmap,dstPoint,length);
+    gnnativeWarpPerspective(bitmap, dstPoint, length);
 //    bitmap->copyData(dst->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
 //    gnNoise(bitmap, k1, k2);
     AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;
 }
 
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nWarpPerspective(JNIEnv* env, jclass type_,
+                                                              jobject bitmap, jobjectArray local,
+                                                              jint type)
+{
+    GNBitmap* gbitmap = praseBitmap(env, bitmap);
+    int ret = 0;
+    if (gbitmap != NULL)
+    {
+        LOGI("parse Suc");
+    } else
+    {
+        LOGI("parse Failed");
+    }
+    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &gbitmap->bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return ret;
+    }
+    int rows = env->GetArrayLength(local);
+    point2D* dstPoint = (point2D*) malloc(sizeof(point2D) * 4);
+    memset(dstPoint, 0, sizeof(point2D) * 4);
+    jintArray array = static_cast<jintArray>(env->GetObjectArrayElement(local, 0));
+    int       cols  = env->GetArrayLength(array);
+    jint* ddatax = env->GetIntArrayElements(array, NULL);
+    array = static_cast<jintArray>(env->GetObjectArrayElement(local, 1));
+    cols  = env->GetArrayLength(array);
+    jint* ddatay = env->GetIntArrayElements(array, NULL);
+    for (int j = 0; j < cols && j < 4; ++j)
+    {
+        dstPoint[j].x = (float) ddatax[j];
+        dstPoint[j].y = (float) ddatay[j];
+    }
+#ifdef GNDEBUG
+    for (int i = 0; i < 4; ++i)
+    {
+        LOGI("(%f, %f)", dstPoint[i].x, dstPoint[i].y);
+    }
+#endif
+    gnnativeWarpPerspective(gbitmap, dstPoint, rows);
+    AndroidBitmap_unlockPixels(env, bitmap);
+    return 1;
+}

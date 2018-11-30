@@ -449,7 +449,14 @@ int filterBorder(argb*&src, int width, int height)
             }
         }
     }
-
-
     return 1;
+}
+
+bool isInRect(int x, int y, int width, int height)
+{
+    if (x >= 0 && y >= 0 && x < width && y < height)
+    {
+        return true;
+    }
+    return false;
 }

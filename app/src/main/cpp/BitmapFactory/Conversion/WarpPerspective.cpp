@@ -68,17 +68,17 @@ WarpPerspective::nativeWarpPerspective(argb* src, argb*&dst, int width, int heig
                                        int length)
 {
     point2D* srcPoints = (point2D*) malloc(4 * sizeof(point2D));
-    srcPoints[0].x          = 0;
-    srcPoints[0].y          = 0;
-    srcPoints[1].x          = width - 1;
-    srcPoints[1].y          = 0;
-    srcPoints[2].x          = 0;
-    srcPoints[2].y          = height - 1;
-    srcPoints[3].x          = width - 1;
-    srcPoints[3].y          = height - 1;
-    gnImage::Matrix* matrix1;
-    double         * matrix = nativeGetPerspectiveTransform(srcPoints, points, matrix1);
+    srcPoints[0].x = 0;
+    srcPoints[0].y = 0;
+    srcPoints[1].x = width - 1;
+    srcPoints[1].y = 0;
+    srcPoints[2].x = 0;
+    srcPoints[2].y = height - 1;
+    srcPoints[3].x = width - 1;
+    srcPoints[3].y = height - 1;
+    double* matrix = nativeGetPerspectiveTransform(srcPoints, points);
     nativeWarpPerspective(src, dst, width, height, matrix);
+    free(matrix);
     return 1;
 }
 
@@ -115,12 +115,24 @@ WarpPerspective::nativeWarpPerspective(argb* src, argb*&dst, int width, int heig
     {
         for (int x = 0; x < width; ++x)
         {
-            double div   = (matrix[2] * x + matrix[5] * y + matrix[8]);
-            double src_x = (matrix[0] * x + matrix[3] * y + matrix[6]) / div;
-            double src_y = (matrix[1] * x + matrix[4] * y + matrix[7]) / div;
-            int    ux    = gnEdge(src_x, width);
-            int    uy    = gnEdge(src_y, height);
-            dst[ux + uy * width] = src[x + y * width];
+            double src_x, src_y;
+            double div = (matrix[2] * x + matrix[5] * y + matrix[8]);
+            if (ABS(div) >= 0.01f)
+            {
+                src_x = (matrix[0] * x + matrix[3] * y + matrix[6]) / div + 0.5f;
+                src_y = (matrix[1] * x + matrix[4] * y + matrix[7]) / div + 0.5f;
+
+            } else
+            {
+                src_x = x;
+                src_y = y;
+            }
+            int ux = src_x;
+            int uy = src_y;
+            if (ABS(ux) > 0 && ABS(ux < width) && ABS(uy) > 0 && ABS(uy < height))
+            {
+                dst[ux + uy * width] = src[x + y * width];
+            }
         }
     }
     return 1;
@@ -153,7 +165,7 @@ WarpPerspective::nativeWarpPerspective(argb* src, argb*&dst, int width, int heig
  * input:
  * 4 point
  */
-double* WarpPerspective::nativeGetPerspectiveTransform(point2D* src, point2D* dst, Matrix*&warp_mat)
+double* WarpPerspective::nativeGetPerspectiveTransform(point2D* src, point2D* dst)
 {
     if (src == NULL)
     {
@@ -170,6 +182,8 @@ double* WarpPerspective::nativeGetPerspectiveTransform(point2D* src, point2D* ds
     double b[8];
     memset(matrix, 0, sizeof(double) * 9);
 
+    int dx3 = dst[0].x - dst[1].x + dst[2].x - dst[3].x;
+    int dy3 = dst[0].y - dst[1].y + dst[2].y - dst[3].y;
 #ifdef  GNDEBUG
     cout << "src dex" << endl;
     for (int i = 0; i < 4; i++)
@@ -211,6 +225,11 @@ double* WarpPerspective::nativeGetPerspectiveTransform(point2D* src, point2D* ds
     }
     Matrix   mX  = alloc_matrix(8, 1);
     matrixSolve(mA, inB, mX);
+    if (dx3 == 0 && dy3 == 0)
+    {
+        set_matrix(mX, 3, 0, 0);
+        set_matrix(mX, 6, 0, 0);
+    }
     for (int i = 0, n = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++, n++)

@@ -76,4 +76,7 @@ argb negativePixelVal(argb value);
 
 int filterBorder(argb*&src, int width, int height);
 
+
+bool isInRect(int x, int y, int width, int height);
+
 #endif //LIBBITMAP_BITMAPUTILLS_H
