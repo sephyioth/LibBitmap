@@ -250,3 +250,61 @@ int oldPaint(argb* src, argb*&dst, int width, int height, int brushSize, int coa
     free(gray);
     return 1;
 }
+
+
+int shadowEffect(argb* src, argb*&dst, int width, int height, int x, int y, int radium, int ktype)
+{
+    assert(src != NULL && radium != 0);
+    dst = static_cast<argb*>(malloc(sizeof(argb) * width * height));
+//    float    dec1 = diameter(0, 0, x, y);
+//    hsv* hsv1 = argb2hsv(src, width, height);
+//    assert(hsv1 != NULL);
+//    float    max  = 0.0f;
+//    for (int i    = 0; i < width * height; ++i)
+//    {
+//        if (max < hsv1[i].S)
+//        {
+//            max = hsv1[i].S;
+//        }
+//    }
+//    LOGI("dect is %f , max :%f", dec1, max);
+//    for (int i = 0; i < height; ++i)
+//    {
+//        for (int j = 0; j < width; ++j)
+//        {
+//            float  dec = diameter(i, j, x, y);
+//            double f   = ktype * (1 - dec / radium) / 255;
+////            f = f < 0 ? 0 : f;
+//            f = f > 1 ? 1 : f;
+//            double temp = hsv1[i * width + j].V + f;
+//            temp = (temp) > 1.0f ? 1.0f : temp;
+//            temp = temp < 0 ? 0 : temp;
+//            hsv1[i * width + j].V = (float) temp;
+//        }
+//    }
+//    dst = hsv2argb(hsv1, width, height);
+    //fixme 2
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
+            float  dec = diameter(i, j, x, y);
+            double f   = ktype * (1 - dec / radium);
+            int    r   = src[i * width + j].red + f;
+            int    g   = src[i * width + j].green + f;
+            int    b   = src[i * width + j].blue + f;
+            r = r > 255 ? 255 : r;
+            r = r < 0 ? 0 : r;
+            g = g > 255 ? 255 : g;
+            g = g < 0 ? 0 : g;
+            b = b > 255 ? 255 : b;
+            b = b < 0 ? 0 : b;
+            dst[i * width + j].red   = (uint8_t) r;
+            dst[i * width + j].green = (uint8_t) g;
+            dst[i * width + j].blue  = (uint8_t) b;
+            dst[i * width + j].alpha = src[i * width + j].alpha;
+        }
+    }
+//    free(hsv1);
+    return 1;
+}

@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -35,11 +37,29 @@ public class MainActivity extends AppCompatActivity {
 
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);// 设置全屏
 
-        setContentView(new MySurfaceView(this));
+//        setContentView(new MySurfaceView(this));
+        setContentView(R.layout.activity_main);
+        mImageView = (ImageView) findViewById(R.id.imageView);
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
+        mImageView.setImageBitmap(mBitmap);
+        mImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch (View v, MotionEvent event) {
+                int x = (int) (event.getX() );
+                int y = (int) (event.getY() - v.getPivotY());
+                Log.i("genesis test", "x :" + v.getScaleX() + "y :" +  v.getScaleY());
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
+                int radium = mBitmap.getWidth() > mBitmap.getHeight() ? mBitmap.getWidth()
+                                                                      : mBitmap.getHeight();
+                ImageImpl.shadowEffect(mBitmap, x, y, radium / 2, 100);
+                mImageView.setImageBitmap(mBitmap);
+                return false;
+            }
+        });
 
-//        mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_source);
 //        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
-////        bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(), true);
+////        bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(),
+// true);
 ////        ImageImpl.(bitmap);
 ////        ImageImpl.noise(bitmap, 1, 1);
 //        mX = mBitmap.getWidth();

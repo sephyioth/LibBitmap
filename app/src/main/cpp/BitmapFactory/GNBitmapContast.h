@@ -62,7 +62,6 @@ typedef struct
     float H;
     float S;
     float V;
-
 } hsv;
 
 typedef struct

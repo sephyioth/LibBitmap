@@ -261,3 +261,19 @@ int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length)
     free(argb1);
     return 1;
 }
+
+
+int gnShadowEffect(GNBitmap* gbitmap, int x, int y, int radium, int ktype)
+{
+    assert(gbitmap != NULL);
+    argb* argb1 = static_cast<argb*>(gbitmap->bitmapData);
+    argb* dst;
+    ktype = ktype <= 0 ? 0 : ktype;
+    ktype = ktype >= 255 ? 255 : ktype;
+    int width  = gbitmap->width;
+    int height = gbitmap->height;
+    shadowEffect(argb1, dst, width, height, x, y, radium, ktype);
+    gbitmap->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(dst);
+    return 1;
+}

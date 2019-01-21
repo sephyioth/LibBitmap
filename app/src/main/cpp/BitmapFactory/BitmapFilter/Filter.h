@@ -24,7 +24,8 @@
  */
 int oldPhoto(argb* src, argb*&dst, int w, int h);
 
-int oldPaint(argb* src, argb*&dst, int w, int h,int brushSize,int coarseness);
+int oldPaint(argb* src, argb*&dst, int w, int h, int brushSize, int coarseness);
+
 /**
  * 雕像
  */
@@ -35,6 +36,8 @@ int lomo(argb* src, argb*&dst, int w, int h, int depth);
 int negative(argb* src, argb*&dst, int w, int h);
 
 int mmirror(argb* src, argb*&dst, int width, int height);
+
+int shadowEffect(argb* src, argb*&dst, int width, int height, int x, int y, int radium, int ktype);
 
 
 #endif //LIBBITMAP_FILTER_H

@@ -361,3 +361,16 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nWarpPerspective(JNIEnv* env, jclas
     AndroidBitmap_unlockPixels(env, bitmap);
     return 1;
 }
+
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nShadowEffect(JNIEnv* env, jclass type, jobject bitmap,
+                                                           jint x, jint y, jint radium, jint ktype)
+{
+    GNBitmap* gbitmap = praseBitmap(env, bitmap);
+    assert(gbitmap != NULL);
+    gnShadowEffect(gbitmap, x, y, radium, ktype);
+    AndroidBitmap_unlockPixels(env, bitmap);
+    return 1;
+}

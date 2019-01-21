@@ -415,9 +415,8 @@ int filterBorder(argb*&src, int width, int height)
     }
     int  w     = width / 2;
     int  h     = height / 2;
-    argb temps = src[100 * width + 100];
-
-    LOGI("r : %d %g : %d :b %d", temps.red, temps.green, temps.blue);
+//    argb temps = src[100 * width + 100];
+//    LOGI("r : %d %g : %d :b %d", temps.red, temps.green, temps.blue);
 
     for (int i = 0; i < height; ++i)
     {
@@ -452,6 +451,7 @@ int filterBorder(argb*&src, int width, int height)
     return 1;
 }
 
+
 bool isInRect(int x, int y, int width, int height)
 {
     if (x >= 0 && y >= 0 && x < width && y < height)
@@ -459,4 +459,12 @@ bool isInRect(int x, int y, int width, int height)
         return true;
     }
     return false;
+}
+
+
+float diameter(float x, float y, float tox, float toy)
+{
+    double tempx = (tox - x);
+    double tempy = (toy - y);
+    return sqrt(tempx * tempx + tempy * tempy);
 }

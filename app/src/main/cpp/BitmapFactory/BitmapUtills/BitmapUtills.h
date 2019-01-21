@@ -26,7 +26,7 @@
 
 argb* hsv2argb(hsv* input, int w, int h);
 
-argb* argb2hsv(argb* input);
+hsv* argb2hsv(argb* input, int w, int h);
 
 uint8_t* rgb5652argb(uint8_t* data, int width, int height);
 
@@ -78,5 +78,7 @@ int filterBorder(argb*&src, int width, int height);
 
 
 bool isInRect(int x, int y, int width, int height);
+
+float diameter(float x, float y, float tox, float toy);
 
 #endif //LIBBITMAP_BITMAPUTILLS_H

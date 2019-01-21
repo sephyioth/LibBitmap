@@ -118,6 +118,11 @@ public class ImageImpl {
         return 1;
     }
 
+    public static int shadowEffect (Bitmap bitmap, int x, int y, int radium, int ktpye) {
+        assert (bitmap == null) : "bitmap error";
+        return nShadowEffect(bitmap, x, y, radium, ktpye);
+    }
+
 
     public static int friter (Bitmap bitmapIn) {
         assert bitmapIn == null : "error bitmap ";
@@ -164,6 +169,8 @@ public class ImageImpl {
 
     private static native int nMedianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, int
             type);
+
+    private static native int nShadowEffect (Bitmap bitmap, int x, int y, int radium, int ktpye);
 
     private static native int nWarpPerspective (Bitmap bitmap, int[][] local, int type);
 

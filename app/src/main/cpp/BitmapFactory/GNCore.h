@@ -35,5 +35,6 @@ int gncvWarpPerspective(GNBitmap* src, IplImage*&dst, point2D* points, int lengt
 
 int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length);
 
+int gnShadowEffect(GNBitmap* gbitmap, int x, int y, int radium, int ktype);
 
 #endif //LIBBITMAP_GNCORE_H
