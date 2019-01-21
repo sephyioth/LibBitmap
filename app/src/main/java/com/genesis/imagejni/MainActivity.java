@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
         mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
+        ImageImpl.noise(mBitmap, 1, 1);
         mImageView.setImageBitmap(mBitmap);
         mImageView.setOnTouchListener(new View.OnTouchListener() {
             @Override

@@ -280,39 +280,7 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nNoise(JNIEnv* env, jclass type, jo
         LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
         return ret;
     }
-//    argb* data = static_cast<argb*>(bitmap->bitmapData);
-
-//
-//
-//    for (int i = 0; i < bitmap->height * bitmap->width; ++i)
-//    {
-//        data[i].alpha = 0x8f;
-//    }
-
-
-
-    int length = 4;
-    point2D* dstPoint = (point2D*) malloc(sizeof(point2D) * length);
-    double x[4] = {0};
-    double y[4] = {0};
-    x[0] = bitmap->width * 0.05;
-    x[1] = bitmap->width * 0.9;
-    x[2] = bitmap->width * 0.2f;
-    x[3] = bitmap->width * 0.8;
-    y[0] = bitmap->height * 0.33;
-    y[1] = bitmap->height * 0.25;
-    y[2] = bitmap->height * 0.7f;
-    y[3] = bitmap->height * 0.9f;
-    for (int i = 0; i < length; ++i)
-    {
-        dstPoint[i].x = x[i];
-        dstPoint[i].y = y[i];
-    }
-//    IplImage* dst;
-//    gncvAffineTransfrom(bitmap, dst, dstPoint, length);
-    gnnativeWarpPerspective(bitmap, dstPoint, length);
-//    bitmap->copyData(dst->imageData, ANDROID_BITMAP_FORMAT_RGBA_8888);
-//    gnNoise(bitmap, k1, k2);
+    gnNoise(bitmap, k1, k2);
     AndroidBitmap_unlockPixels(env, bitmapIn);
     return 1;
 }
