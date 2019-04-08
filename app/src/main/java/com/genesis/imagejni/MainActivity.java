@@ -41,22 +41,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
         mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
-        ImageImpl.noise(mBitmap, 1, 1);
+//        ImageImpl.noise(mBitmap, 1, 1);
+        ImageImpl.lightAverage(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), 1);
         mImageView.setImageBitmap(mBitmap);
-        mImageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch (View v, MotionEvent event) {
-                int x = (int) (event.getX() );
-                int y = (int) (event.getY() - v.getPivotY());
-                Log.i("genesis test", "x :" + v.getScaleX() + "y :" +  v.getScaleY());
-                mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
-                int radium = mBitmap.getWidth() > mBitmap.getHeight() ? mBitmap.getWidth()
-                                                                      : mBitmap.getHeight();
-                ImageImpl.shadowEffect(mBitmap, x, y, radium / 2, 100);
-                mImageView.setImageBitmap(mBitmap);
-                return false;
-            }
-        });
+//        mImageView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch (View v, MotionEvent event) {
+//                int x = (int) (event.getX() );
+//                int y = (int) (event.getY() - v.getPivotY());
+//                Log.i("genesis test", "x :" + v.getScaleX() + "y :" +  v.getScaleY());
+//                mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
+//                int radium = mBitmap.getWidth() > mBitmap.getHeight() ? mBitmap.getWidth()
+//                                                                      : mBitmap.getHeight();
+//                ImageImpl.shadowEffect(mBitmap, x, y, radium / 2, 100);
+//                mImageView.setImageBitmap(mBitmap);
+//                return false;
+//            }
+//        });
 
 //        Bitmap bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_boe);
 ////        bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap.getWidth(), bitmap.getHeight(),

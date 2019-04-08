@@ -342,3 +342,85 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nShadowEffect(JNIEnv* env, jclass t
     AndroidBitmap_unlockPixels(env, bitmap);
     return 1;
 }
+
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nBitmapLightAverage(JNIEnv* env, jclass type,
+                                                                 jobject bitmap, jint x, jint y,
+                                                                 jint width, jint height,
+                                                                 jint filter)
+{
+    LOGI("jni light average start ");
+    int               ret = -1;
+    AndroidBitmapInfo infoin;
+    if (bitmap == NULL)
+    {
+        return ret;
+    }
+    if ((ret = AndroidBitmap_getInfo(env, bitmap, &infoin)) < 0)
+    {
+        LOGE("AndroidBitmap_getInfo() failed ! error=%d", ret);
+        return NULL;
+    }
+    int  chennel = 0;
+    int  w       = infoin.width;
+    int  h       = infoin.height;
+    long dataAdd = 0;
+    if (infoin.format == ANDROID_BITMAP_FORMAT_RGBA_8888)
+    {
+        chennel = 4;
+    } else if (infoin.format == ANDROID_BITMAP_FORMAT_A_8)
+    {
+        chennel = 1;
+    } else if (infoin.format == ANDROID_BITMAP_FORMAT_RGB_565 ||
+               infoin.format == ANDROID_BITMAP_FORMAT_RGBA_4444)
+    {
+        chennel = 2;
+    }
+    void* bitmapData = malloc(sizeof(uint8_t) * w * h * chennel);
+    if ((ret = AndroidBitmap_lockPixels(env, bitmap, &bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return NULL;
+    }
+    int ex = x + width < 0 ? 0 : x + width;
+    ex = ex > w ? w : ex;
+    int ey = y + height < 0 ? 0 : y + height;
+    ex = ex > h ? h : ey;
+    int count = 0;
+    if (infoin.format == ANDROID_BITMAP_FORMAT_RGBA_8888)
+    {
+        argb* argb1 = (argb*) bitmapData;
+        for (int i = x; i < ex; i += filter)
+        {
+            for (int j = y; j < ey; ++j)
+            {
+                argb temp = argb1[i * width + j];
+                dataAdd += 0.299 * temp.red + 0.587 * temp.green + 0.114 * temp.blue;
+                count++;
+            }
+        }
+        count      = count > 0 ? count : 1;
+        ret        = dataAdd / count;
+    } else if (infoin.format == ANDROID_BITMAP_FORMAT_A_8)
+    {
+        uint8_t* data = (uint8_t*) bitmapData;
+        for (int i = 0; i < ex; i += filter)
+        {
+            for (int j = 0; j < ey; ++j)
+            {
+                filter += data[i * width + j];
+                count++;
+            }
+        }
+        count      = count > 0 ? count : 1;
+        ret        = dataAdd / count;
+    } else
+    {
+        LOGE("Not support Android RGB565 AND rgb444");
+    }
+    LOGI("average light %d ,will return ", ret);
+    free(bitmapData);
+    AndroidBitmap_unlockPixels(env, bitmap);
+    return ret;
+}

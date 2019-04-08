@@ -77,8 +77,8 @@ public class ImageImpl {
     }
 
 
-    public static int medianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, MedianType
-            type) {
+    public static int medianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH,
+                                  MedianType type) {
         return nMedianBlur(bitmap, mask, blurW, blurH, type.getId());
     }
 
@@ -140,6 +140,13 @@ public class ImageImpl {
         return nSharpening(bitmapIn);
     }
 
+    public static int lightAverage (Bitmap bitmap, int x, int y, int width, int height,
+                                    int filter) {
+        assert bitmap == null : "error bitmap ";
+        assert filter <= 0 : "error filter";
+        return nBitmapLightAverage(bitmap, x, y, width, height, filter);
+    }
+
     public static int[] histgramImage (Bitmap bitmap) {
         return nHistgramImage(bitmap);
     }
@@ -167,12 +174,26 @@ public class ImageImpl {
 
     private static native int nGauss2Blur (Bitmap bitmap, Bitmap mask, int radium, int type);
 
-    private static native int nMedianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH, int
-            type);
+    private static native int nMedianBlur (Bitmap bitmap, Bitmap mask, int blurW, int blurH,
+                                           int type);
 
     private static native int nShadowEffect (Bitmap bitmap, int x, int y, int radium, int ktpye);
 
     private static native int nWarpPerspective (Bitmap bitmap, int[][] local, int type);
+
+    /**
+     * 求均值亮度
+     *
+     * @param bitmap
+     * @param x      对应坐标x
+     * @param y      对应坐标y
+     * @param width  对应采样width
+     * @param height 对应采样height
+     * @param filter 对应采样频率
+     * @return
+     */
+    private static native int nBitmapLightAverage (Bitmap bitmap, int x, int y, int width,
+                                                   int height, int filter);
 
     static {
         try {

@@ -18,6 +18,8 @@
 
 #include <jni.h>
 #include <string>
+#include <android/bitmap.h>
+#include "BitmapFactory/GNBitmapContast.h"
 
 
 extern "C"
@@ -74,6 +76,13 @@ JNIEXPORT jint JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nWarpPerspective(JNIEnv* env, jclass type_,
                                                               jobject bitmap, jobjectArray local,
                                                               jint type);
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nBitmapLightAverage(JNIEnv* env, jclass type,
+                                                                 jobject bitmap, jint x, jint y,
+                                                                 jint width, jint height,
+                                                                 jint filter);
+
 };
+
 
 #endif //IMAGEJNI_IMAGENATIVEIMPL_H
