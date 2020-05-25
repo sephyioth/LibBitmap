@@ -13,6 +13,7 @@
 * @version    
 *    
 */
+#include <cstring>
 #include "GNCore.h"
 #include "android/bitmap.h"
 #include "BitmapUtills/BitmapUtills.h"
@@ -259,6 +260,160 @@ int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length)
     }
     src->copyData(argb1, ANDROID_BITMAP_FORMAT_RGBA_8888);
     free(argb1);
+    return 1;
+}
+
+
+#define PARAME_ANGLE 6 / 7
+#define PARAME_Y 2
+
+
+float caleTwistKValue(float k, float mr, float r)
+{
+    return (r - mr * PARAME_ANGLE) * (r - mr * PARAME_ANGLE) * k - PARAME_Y;
+}
+
+
+argb twistCalePixel(argb* src, argb*&dst, int width, int height, int x, int y, uint32_t radius,
+                    uint32_t maxradium,
+                    float k)
+{
+    argb     pixel;
+    uint32_t tempr, tempg, tempb;
+    //fixme 2 ~ -2 倍数
+    float    valuet = caleTwistKValue(k, maxradium, radius);
+//    if (valuet <= 0)
+//    {
+
+//        dst[x + (y) * width].red   = tempr;
+//        dst[x + (y) * width].green = tempg;
+//        dst[x + (y) * width].blue  = tempb;
+
+//        dst[x + (y) * width].red   = 100;
+//        dst[x + (y) * width].green = 100;
+//        dst[x + (y) * width].blue  = 100;
+//        dst[x + (y) * width].alpha = 0xff;
+//    } else
+//    {
+    float    tempvalue = -0.125f * valuet + 0.75;
+    float    fx        = x - width / 2;
+    float    fy        = y - height / 2;
+    float    fr        = radius;
+    float    tx        = tempvalue * fr * cos(acos(fx / radius)) + width / 2;
+    float    ty        = tempvalue * fr * sin(asin(fy / radius)) + height / 2;
+    uint32_t ux        = (uint32_t) gnEdge(tx, width);
+    uint32_t uy        = (uint32_t) gnEdge(ty, height);
+    tempr = src[ux + (uy) * width].red;
+    tempg = src[ux + (uy) * width].green;
+    tempb = src[ux + (uy) * width].blue;
+
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            int32_t tempx = ux + i < 0 ? 0 : ux + i;
+            tempx = ux + i > width ? width : ux + i;
+            int32_t tempy = uy + j < 0 ? 0 : uy + j;
+            tempy = uy + i > height ? height : uy + i;
+
+            tempr = tempr * tempvalue +
+                    (1 - tempvalue) * src[tempx + tempy * width].red;
+            tempg = tempg * tempvalue +
+                    (1 - tempvalue) * src[tempx + tempy * width].green;
+            tempb = tempb * tempvalue +
+                    (1 - tempvalue) * src[tempx + tempy * width].blue;
+
+        }
+    }
+
+    dst[x + (y) * width].red   = tempr;
+    dst[x + (y) * width].green = tempg;
+    dst[x + (y) * width].blue  = tempb;
+    dst[x + (y) * width].alpha = 0xff;
+
+
+//        dst[x + (y) * width].red   = 100;
+//        dst[x + (y) * width].green = 0;
+//        dst[x + (y) * width].blue  = 01;
+
+
+//        dst[ux + (uy) * width].red   = 100;
+//        dst[ux + (uy) * width].green = 100;
+//        dst[ux + (uy) * width].blue  = 0;
+//        dst[ux + (uy) * width].alpha = 0xff;
+
+//    }
+    return pixel;
+}
+
+
+/**
+ * 原型计算公式，x^2 + y^2 = r^2
+ * 以中心点 width/2 height /2 进行扩散放大
+ * @param src
+ * @param dst
+ * @param width
+ * @param height
+ * @param angle
+ * @return
+ */
+int twist(argb* src, argb*&dst, int width, int height, float angle)
+{
+    assert(src != NULL && angle >= 0);
+    float maxradius = width > height ? width : height;
+    maxradius = maxradius / 2;
+    dst       = static_cast<argb*>(malloc(sizeof(argb) * width * height));
+    memset(dst, 0, sizeof(argb) * width * height);
+    //定义中心点
+    uint32_t lx = width / 2;
+    uint32_t ly = height / 2;
+
+    float fangle = (angle + 1) / 50;
+    float funcK1 = (float) PARAME_Y * 2 /
+                   (maxradius * maxradius * PARAME_ANGLE * PARAME_ANGLE * fangle);
+    float funcK2 =
+                  (float) (PARAME_Y + 1) /
+                  (maxradius * maxradius * PARAME_ANGLE * PARAME_ANGLE * angle);
+
+    for (int y = 1; y < height - 1; ++y)
+    {
+        for (int x = 1; x < width - 1; ++x)
+        {
+            double value = (x - lx) * (x - lx) + (y - ly) * (y - ly);
+            double r     = sqrt(value);
+            if (r < maxradius * 2 / 3)
+            {
+                twistCalePixel(src, dst, width, height, x, y, r, maxradius,
+                               funcK1);
+            } else
+            {
+                twistCalePixel(src, dst, width, height, x, y, r, maxradius,
+                               funcK2);
+            }
+        }
+    }
+    return 1;
+}
+
+
+int gnTwist(GNBitmap* gbitmap, float angle)
+{
+    assert(gbitmap != NULL);
+    LOGI("gnTwist start ");
+    argb* argb1 = static_cast<argb*>(gbitmap->bitmapData);
+    argb* dst;
+    if (argb1 == NULL || gbitmap->type != ANDROID_BITMAP_FORMAT_RGBA_8888)
+    {
+        LOGI("gnTwist return  ");
+        return -1;
+    }
+    if (dst == NULL)
+    {
+        LOGE("error argb1 is null:");
+    }
+    twist(argb1, dst, gbitmap->width, gbitmap->height, angle);
+    gbitmap->copyData(dst, ANDROID_BITMAP_FORMAT_RGBA_8888);
+    free(dst);
     return 1;
 }
 

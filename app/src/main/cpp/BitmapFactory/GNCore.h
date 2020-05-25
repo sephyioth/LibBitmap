@@ -37,4 +37,6 @@ int gnnativeWarpPerspective(GNBitmap* src, point2D* points, int length);
 
 int gnShadowEffect(GNBitmap* gbitmap, int x, int y, int radium, int ktype);
 
+int gnTwist(GNBitmap* gbitmap, float angle);
+
 #endif //LIBBITMAP_GNCORE_H

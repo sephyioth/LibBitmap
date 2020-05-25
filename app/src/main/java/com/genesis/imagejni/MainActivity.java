@@ -7,20 +7,25 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.genesis.imagejni.imageLib.ImageImpl;
 
 public class MainActivity extends AppCompatActivity {
     private Bitmap mBitmap;
     private int    mX, mY;
-    private int       mCount   = 100;
+    private int       mCount = 100;
     private ImageView mImageView;
-    private Handler   mHandler = new Handler() {
+    private ImageView mImageView2;
+    private SeekBar   mSeekBar;
+    private TextView  mTvParame;
+
+    private Handler mHandler = new Handler() {
+
         @Override
         public void handleMessage (Message msg) {
             super.handleMessage(msg);
@@ -40,10 +45,41 @@ public class MainActivity extends AppCompatActivity {
 //        setContentView(new MySurfaceView(this));
         setContentView(R.layout.activity_main);
         mImageView = (ImageView) findViewById(R.id.imageView);
-        mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
+        mImageView2 = (ImageView) findViewById(R.id.imagedeal);
+
+        mSeekBar = findViewById(R.id.skbar_parame);
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged (SeekBar seekBar, int progress, boolean fromUser) {
+//                mTvParame.setText(progress);
+                Log.i("tag", "onProgressChanged: "+progress);
+
+            }
+
+            @Override
+            public void onStartTrackingTouch (SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch (SeekBar seekBar) {
+                int progress = seekBar.getProgress();
+                mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.test1);
+                mImageView.setImageResource(R.mipmap.test1);
+                ImageImpl.nTwist(mBitmap, progress);
+                mImageView2.setImageBitmap(mBitmap);
+
+            }
+        });
+        mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.test1);
+        mImageView.setImageResource(R.mipmap.test1);
+        ImageImpl.nTwist(mBitmap, 30);
+        mImageView2.setImageBitmap(mBitmap);
+
+//        mBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.bmp_src);
 //        ImageImpl.noise(mBitmap, 1, 1);
-        ImageImpl.lightAverage(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), 1);
-        mImageView.setImageBitmap(mBitmap);
+//        ImageImpl.lightAverage(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), 1);
+//        mImageView.setImageBitmap(mBitmap);
 //        mImageView.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
 //            public boolean onTouch (View v, MotionEvent event) {

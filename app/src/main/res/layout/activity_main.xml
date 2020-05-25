@@ -1,18 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="128dp"
-        tools:layout_editor_absoluteY="191dp"
-        tools:srcCompat="@tools:sample/avatars"/>
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                tools:layout_editor_absoluteX="128dp"
+                tools:layout_editor_absoluteY="191dp"
+                tools:srcCompat="@tools:sample/avatars" />
+
+
+            <ImageView
+                android:id="@+id/imagedeal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                tools:layout_editor_absoluteX="128dp"
+                tools:layout_editor_absoluteY="191dp"
+                tools:srcCompat="@tools:sample/avatars" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="70dp"
+            android:orientation="horizontal"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/textshow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="parame"></TextView>
+
+            <SeekBar
+                android:id="@+id/skbar_parame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                ></SeekBar>
+        </LinearLayout>
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>

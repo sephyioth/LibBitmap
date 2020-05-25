@@ -185,12 +185,11 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nFriter(JNIEnv* env, jclass type, j
 
 
 JNIEXPORT jint
-
-
 JNICALL
 Java_com_genesis_imagejni_imageLib_ImageImpl_nMmirror(JNIEnv* env, jclass type, jobject bitmapIn,
                                                       jfloat point)
 {
+
 
     // TODO
     return 1;
@@ -423,4 +422,61 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nBitmapLightAverage(JNIEnv* env, jc
     free(bitmapData);
     AndroidBitmap_unlockPixels(env, bitmap);
     return ret;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nMovingDetection(JNIEnv* env, jclass clazz,
+                                                              jobject bitmapsrc1,
+                                                              jobject bitmapsrc2,
+                                                              jobject bitmap_dst)
+{
+    GNBitmap* gbitmap1 = praseBitmap(env, bitmapsrc1);
+    GNBitmap* gbitmap2 = praseBitmap(env, bitmapsrc2);
+    GNBitmap* gbitmap3 = praseBitmap(env, bitmap_dst);
+
+    Mat* pFrameMat  = (Mat*)gbitmap1->getCvImage();
+    Mat* mBgImg = (Mat*)gbitmap2->getCvImage();
+    Mat* mDstImg  = (Mat*)gbitmap3->getCvImage();
+    Mat dst,pFrImg ;
+    absdiff(*pFrameMat,*mBgImg,dst);
+    threshold(dst, pFrImg, 60, 255.0, 0);
+//    erode(pFrImg,pFrImg, 0,1);
+//    erode(pFrImg,pFrImg, 0,1);
+    cvRunningAvg(pFrameMat, mBgImg, 0.003, 0);
+//    cvConvert(p, pBkImg);
+    cvSaveImage("/sdcard/cvBg.jpg",mBgImg,0);
+    cvSaveImage("/sdcard/cvImg.jpg",pFrameMat,0);
+//    ("/sdcard/cvdst.jpg",dst,0);
+
+    AndroidBitmap_unlockPixels(env, bitmapsrc1);
+    AndroidBitmap_unlockPixels(env, bitmapsrc2);
+    AndroidBitmap_unlockPixels(env, bitmap_dst);
+
+    // TODO: implement nMovingDetect
+    return 1;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nTwist(JNIEnv* env, jclass clazz, jobject bitmap_in,
+                                                   jfloat angle)
+{
+    GNBitmap* gbitmap = praseBitmap(env, bitmap_in);
+    int ret = 0;
+    if (gbitmap != NULL)
+    {
+        LOGI("parse Suc");
+    } else
+    {
+        LOGI("parse Failed");
+    }
+    if ((ret = AndroidBitmap_lockPixels(env, bitmap_in, &gbitmap->bitmapData)) < 0)
+    {
+        LOGE("AndroidBitmap_lockPixels() failed ! error=%d", ret);
+        return ret;
+    }
+    gnTwist(gbitmap, angle);
+    AndroidBitmap_unlockPixels(env, bitmap_in);
+    return 1;
 }

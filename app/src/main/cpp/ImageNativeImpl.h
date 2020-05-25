@@ -81,6 +81,15 @@ Java_com_genesis_imagejni_imageLib_ImageImpl_nBitmapLightAverage(JNIEnv* env, jc
                                                                  jobject bitmap, jint x, jint y,
                                                                  jint width, jint height,
                                                                  jint filter);
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nMovingDetection(JNIEnv* env, jclass clazz,
+                                                              jobject bitmapsrc1,
+                                                              jobject bitmapsrc2,
+                                                              jobject bitmap_dst);
+
+JNIEXPORT jint JNICALL
+Java_com_genesis_imagejni_imageLib_ImageImpl_nTwist(JNIEnv* env, jclass clazz, jobject bitmap_in,
+                                                   jfloat angle);
 
 };
 

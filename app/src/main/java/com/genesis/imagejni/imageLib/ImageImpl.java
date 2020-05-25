@@ -1,6 +1,7 @@
 package com.genesis.imagejni.imageLib;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 
 import java.util.concurrent.ConcurrentNavigableMap;
 
@@ -180,6 +181,13 @@ public class ImageImpl {
     private static native int nShadowEffect (Bitmap bitmap, int x, int y, int radium, int ktpye);
 
     private static native int nWarpPerspective (Bitmap bitmap, int[][] local, int type);
+
+    public static native int nMovingDetection(Bitmap bitmapsrc1,Bitmap bitmapsrc2,Bitmap bitmapDst);
+
+
+    public static native int nTwist (Bitmap bitmapIn, float angle);
+
+//    public native Point nGetSpritePosition (int addr);
 
     /**
      * 求均值亮度
